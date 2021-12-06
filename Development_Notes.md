@@ -21,6 +21,39 @@ Initial install credentials are 'admin' and complete instance ID e.g. `i-00a6c83
 
 The current password is `ffd47c7827cb`.
 
+After setting up the [development environment](https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/SetUpADevEnvironment) and creating the user 'phantom', you can
+logoff and return by using:
+
+```shell
+ssh centos@54.237.22.196 -i customer_training.pem
+su phantom
+<enter the same password as the admin login>
+cd /home/phantom
+```
+
+Alternately, you can go directly to the development user by entering:
+
+```shell
+ssh phantom@54.237.22.196 -i customer_training.pem 
+```
+and you will be put in `/home/phantom`.
+
+You can see the installed app(s) directory (and user phantom has permissions) at:
+
+`/opt/phantom/apps/*ciscosecure*`
+
+VSCode Remote SSH
+-----------------
+You can use the VSCode Remote SSH development environment to connect to the AWS EC2 instance.
+
+```
+Host Splunk_SOAR
+  User phantom
+  HostName 54.237.22.196
+  IdentityFile ~/.ssh/customer_training.pem
+```
+Once connected, the `phantom` user has access to `git` and `python3.6`.
+
 App Development Architecture and App Wizzard
 ---------------------------------------------
 Documentation for [Develop Apps for Splunk SOAR (On-premises)](https://docs.splunk.com/Documentation/SOARonprem/5.1.0/DevelopApps/Overview)

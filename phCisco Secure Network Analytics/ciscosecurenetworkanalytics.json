@@ -1,0 +1,34 @@
+{
+    "appid": "eac976c5-c8d7-4b77-9fdd-52bab068679c",
+    "name": "Cisco Secure Network Analytics",
+    "description": "Cisco Secure Network Analytics (formerly Stealthwatch)",
+    "type": "information",
+    "product_vendor": "Cisco",
+    "logo": "ciscosecurenetworkanalytics.png",
+    "logo_dark": "ciscosecurenetworkanalytics_dark.png",
+    "product_name": "Cisco",
+    "python_version": "3",
+    "product_version_regex": ".*",
+    "publisher": "World Wide Technology",
+    "license": "Copyright (c) World Wide Technology, 2021",
+    "app_version": "1.0.0",
+    "utctime_updated": "2021-12-06T16:13:03.261659Z",
+    "package_name": "phantom_ciscosecurenetworkanalytics",
+    "main_module": "ciscosecurenetworkanalytics_connector.py",
+    "min_phantom_version": "5.1.0.70187",
+    "app_wizard_version": "1.0.0",
+    "configuration": {},
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        }
+    ]
+}

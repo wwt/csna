@@ -1,0 +1,19 @@
+{
+    "app_config": null,
+    "asset_id": "22",
+    "config": {
+               "smc_host": "192.0.2.1",
+               "smc_username": "admin",
+               "smc_password": "redacted",
+               "smc_tenant": "default"
+    },
+    "debug_level": 3,
+    "identifier": "retrieve flows",
+    "parameters": [
+        {
+            "malicious_ip": "8.8.8.8",
+            "timespan": 60,
+            "start_time": "2021-12-07T15:30:00Z"
+        }
+    ]
+}

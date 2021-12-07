@@ -13,9 +13,10 @@ from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
 
 # Usage of the consts file is recommended
-# from ciscosecurenetworkanalytics_consts import *
+from ciscosecurenetworkanalytics_consts import *
 import requests
 import json
+import time
 from bs4 import BeautifulSoup
 
 
@@ -37,7 +38,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Variable to hold a base_url in case the app makes REST calls
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
-        self._base_url = None
+        self._base_url = "https://"
+
+        # Contains the requests session object
+        self._api_session = None
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
@@ -122,39 +126,58 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
+    def _login(self, config):
+        """ Create a Requests Session so we can store the Cookie for subsequent API calls
+
+        Args:
+            config ([type]): [description]
+        """
+        self.api_session = requests.Session()
+        url = self._base_url + config["smc_host"] + "/token/v2/authenticate"
+        login_request_data = {
+            "username": config['smc_userid'],
+            "password": config['smc_password']
+             }
+
+        r = self.api_session.request("POST", url, config.get('verify_server_cert', False), data=login_request_data)
+        if r.status_code == r.OK:
+            for cookie in r.cookies:
+                if cookie.name == XSRF_HEADER_NAME:
+                    self.api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
+                    break
+        return r.status_code
+
     def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
-        config = self.get_config()
+        config = self.get_config()    # The config has your credentials
 
         resp_json = None
-
-        try:
-            request_func = getattr(requests, method)
-        except AttributeError:
-            return RetVal(
-                action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)),
-                resp_json
-            )
 
         # Create a URL to connect to
         url = self._base_url + endpoint
 
-        try:
-            r = request_func(
-                url,
-                # auth=(username, password),  # basic authentication
-                verify=config.get('verify_server_cert', False),
-                **kwargs
-            )
-        except Exception as e:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
-                ), resp_json
-            )
+        if not self._api_session:
+            ret_val = self._login(config)
+            if ret_val != 200:
+                self.save_progress("Unable to connect to Management Controller")
+                action_result.set_status(phantom.APP_ERROR, "Unable to connect to Management Controller:{0}".format(ret_val))
+                return action_result.get_status()
+        #try:
+        #
+        #         url,
+        #        # auth=(username, password),  # basic authentication
+        #        verify=config.get('verify_server_cert', False),
+        #        **kwargs
+        #    )
+        #except Exception as e:
+        #    return RetVal(
+        #        action_result.set_status(
+        #            phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
+        #        ), resp_json
+        #    )
 
-        return self._process_response(r, action_result)
+        return self._process_response(ret_val, action_result)
 
     def _handle_test_connectivity(self, param):
         # Add an action result object to self (BaseConnector) to represent the action for this param
@@ -175,13 +198,23 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             # the call to the 3rd party device or service failed, action result should contain all the error details
             # for now the return is commented out, but after implementation, return from here
             self.save_progress("Test Connectivity Failed.")
-            # return action_result.get_status()
+            return action_result.get_status()
 
         # Return success
-        # self.save_progress("Test Connectivity Passed")
-        # return action_result.set_status(phantom.APP_SUCCESS)
+        self.save_progress("Test Connectivity Passed")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
+        # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+
+    def _handle_retrieve_flows(self, param):
+        """
+        Retrieve flows from Management Console
+
+        Args:
+            param ([type]): [description]
+        """
+        action_result = self.add_action_result(ActionResult(dict(param)))
         return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
     def handle_action(self, param):
@@ -194,6 +227,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
+        if action_id == 'retrieve_flows':
+            ret_val = self._handle_retrieve_flows(param)
 
         return ret_val
 
@@ -213,6 +248,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Optional values should use the .get() function
         optional_config_name = config.get('optional_config_name')
         """
+        self.debug_print("{} INITIALIZE {}".format(BANNER, time.asctime()))
 
         self._base_url = config.get('base_url')
 

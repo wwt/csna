@@ -17,16 +17,47 @@
     "main_module": "ciscosecurenetworkanalytics_connector.py",
     "min_phantom_version": "5.1.0.70187",
     "app_wizard_version": "1.0.0",
-    "configuration": {},
+    "configuration": {"smc_userid": {"description": "Userid", "data_type": "string", "required": true},
+                      "smc_password": {"description": "Password", "data_type": "password", "required": true},
+                      "smc_host": {"description": "Management Console Hostname/IP", "data_type": "string", "required": true},
+                      "smc_tenant": {"description": "Tenant", "data_type": "string", "required": true},
+                      "verify_server_cert": {"description": "Verify Server Certificate default=False", "data_type": "boolean", "required": false}},
     "actions": [
         {
             "action": "test connectivity",
             "identifier": "test_connectivity",
-            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "description": "Validate connectivity to the Management Console API using supplied configuration",
             "verbose": "",
             "type": "test",
             "read_only": true,
             "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "retrieve flows",
+            "identifier": "retrieve_flows",
+            "description": "Given a malicious IP address, return flow data beginning at the start time for the specified duration.",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {"timespan": {
+                           "description": "Timespan (minutes) default 60 minutes",
+                           "data_type": "numeric",
+                           "required": false
+              },
+                           "start_time": {
+                           "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, if not specified, last hour",
+                           "data_type": "string",
+                           "required": false
+  },
+                           "malicious_ip": {
+                           "description": "Malicious IP address as target for search",
+                           "contains": [ "ip" ],
+                           "primary": true,
+                           "data_type": "string",
+                           "required": true
+              }},
             "output": [],
             "versions": "EQ(*)"
         }

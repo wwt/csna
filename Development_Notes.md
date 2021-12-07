@@ -58,3 +58,25 @@ App Development Architecture and App Wizzard
 ---------------------------------------------
 Documentation for [Develop Apps for Splunk SOAR (On-premises)](https://docs.splunk.com/Documentation/SOARonprem/5.1.0/DevelopApps/Overview)
 
+Sample Use Case
+---------------
+Example Python code to get the flows for a specific IP in Stealthwatch using the REST API.
+
+The user must provide the Sealthwatch Management Console:
+
+* userid
+* password
+* hostname / IP address
+* Tenant ID
+
+This code provides an example of authenticating to the API (using a Requests Session), returning a `XSRF token` for future requests.
+
+To retrieve data, a start and end date and time must be calculated and a record limit specified (or a default value).
+
+With the above information, a POST command is sent, and the program should expect a response code of 201 and wait for the results to be generated. 
+
+Based on a search id returned, the program will need to query (every second) until the percent complete is 100.0% Returned is a list of flows in the content. 
+
+https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/blob/master/python/get_flows.py
+
+API documentation: https://developer.cisco.com/docs/stealthwatch/

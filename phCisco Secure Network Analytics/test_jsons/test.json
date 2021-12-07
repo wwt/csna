@@ -1,0 +1,14 @@
+{
+    "app_config": null,
+    "asset_id": "22",
+    "config": {
+               "smc_host": "192.0.2.1",
+               "smc_username": "admin",
+               "smc_password": "redacted",
+               "smc_tenant": "default"
+    },
+    "debug_level": 3,
+    "identifier": "test connectivity",
+    "parameters": [
+    ]
+}

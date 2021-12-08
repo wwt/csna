@@ -126,11 +126,25 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _login(self, config):
-        """ Create a Requests Session so we can store the Cookie for subsequent API calls
+    def _logout(self, config):
+        """ Logout of the session with the Management Console
 
         Args:
             config ([type]): [description]
+        """
+        url = self._base_url + config["smc_host"] + "/token/"
+        r = self.api_session.delete(uri, timeout=30, config.get('verify_server_cert', False))
+        # self.api_session.headers.update({XSRF_HEADER_NAME: None})
+        self._api_session = None    # we test if this variable is True to determine if we have a session
+
+        return
+
+    def _login(self, config):
+        """ Create a Requests Session with the Management Console, authenticate and
+            store the Cookie for subsequent API calls.
+
+        Args:
+            config (dict): values from the app configuration description
         """
         self.api_session = requests.Session()
         url = self._base_url + config["smc_host"] + "/token/v2/authenticate"
@@ -138,8 +152,11 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             "username": config['smc_userid'],
             "password": config['smc_password']
              }
+        try:
+            r = self.api_session.request("POST", url, config.get('verify_server_cert', False), data=login_request_data)
+        except Exception as e:
+            return 504  # Gateway Time-Out - likely the Management Console is unreachable 
 
-        r = self.api_session.request("POST", url, config.get('verify_server_cert', False), data=login_request_data)
         if r.status_code == r.OK:
             for cookie in r.cookies:
                 if cookie.name == XSRF_HEADER_NAME:
@@ -150,7 +167,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
     def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
-        config = self.get_config()    # The config has your credentials
+        config = self.get_config()    # config has your credentials and the hostname of the Management Console
 
         resp_json = None
 
@@ -160,22 +177,16 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         if not self._api_session:
             ret_val = self._login(config)
             if ret_val != 200:
-                self.save_progress("Unable to connect to Management Controller")
-                action_result.set_status(phantom.APP_ERROR, "Unable to connect to Management Controller:{0}".format(ret_val))
-                return action_result.get_status()
-        #try:
-        #
-        #         url,
-        #        # auth=(username, password),  # basic authentication
-        #        verify=config.get('verify_server_cert', False),
-        #        **kwargs
-        #    )
-        #except Exception as e:
-        #    return RetVal(
-        #        action_result.set_status(
-        #            phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))
-        #        ), resp_json
-        #    )
+                # self.save_progress("Unable to connect to Management Controller")
+                return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR, "Unable to connect to Management Controller:{0}".format(ret_val)
+                    ), resp_json
+                )
+        if endpoint == TEST_CONNECTIVITY:
+            return self._process_response(ret_val, action_result)
+
+        # TODO  Do the REST CALL HERE
 
         return self._process_response(ret_val, action_result)
 
@@ -188,10 +199,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Also typically it does not add any data into an action_result either.
         # The status and progress messages are more important.
 
-        self.save_progress("Connecting to endpoint")
+        self.save_progress("Connecting to Management Console")
         # make rest call
         ret_val, response = self._make_rest_call(
-            '/endpoint', action_result, params=None, headers=None
+            TEST_CONNECTIVITY, action_result, params=None, headers=None
         )
 
         if phantom.is_fail(ret_val):

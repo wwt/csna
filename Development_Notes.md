@@ -80,3 +80,56 @@ Based on a search id returned, the program will need to query (every second) unt
 https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/blob/master/python/get_flows.py
 
 API documentation: https://developer.cisco.com/docs/stealthwatch/
+
+How to set up the development environment with VSCode and remote SSH
+--------------------------------------------------------------------
+
+First open the remote SSH to the phantom server in VSCode.
+
+From your terminal prompt, create a directory in your home directory `app`
+
+```
+mkdir app
+``
+
+Set your username and email address in the get configuration.
+
+```
+git config --global user.name "Joel W. King"
+git config --global user.email joel.king@wwt.com
+git config --global color.ui true
+git config --global core.editor vim                  # Note esc + :q or esc + :q! to exit vim
+```
+
+Generate an SSH key and install it on your GitHub account.
+
+```
+ssh-keygen -t rsa -b 2048 -C "joel.king+phantom@wwt.com"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/phantom/.ssh/id_rsa): /home/phantom/.ssh/id_github
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/phantom/.ssh/id_github.
+Your public key has been saved in /home/phantom/.ssh/id_github.pub.
+```
+
+View the key and copy and paste it into your account, https://github.com/settings/keys
+
+```
+cat /home/phantom/.ssh/id_github.pub
+```
+Assuming the repository is available (this repo will be moved to the WWT organization in the future) at `https://github.com/joelwking/csna.git`
+
+```
+GIT_SSH_COMMAND='ssh -i /home/phantom/.ssh/id_github' git clone git@github.com:joelwking/csna.git
+cd csna/phCisco\ Secure\ Network\ Analytics/
+```
+
+***INSERT EXECUTING INSTRUCTIONS HERE***
+
+
+After making your changes:
+
+```
+GIT_SSH_COMMAND='ssh -i /home/phantom/.ssh/id_github' git push origin main
+```

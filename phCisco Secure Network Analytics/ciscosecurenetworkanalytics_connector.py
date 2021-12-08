@@ -38,7 +38,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Variable to hold a base_url in case the app makes REST calls
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
-        self._base_url = "https://"
+        self._base_url = None
 
         # Contains the requests session object
         self._api_session = None
@@ -147,7 +147,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             config (dict): values from the app configuration description
         """
         self.api_session = requests.Session()
-        url = self._base_url + config["smc_host"] + "/token/v2/authenticate"
+        url = "https://" + config["smc_host"] + "/token/v2/authenticate"
         login_request_data = {
             "username": config['smc_username'],
             "password": config['smc_password']
@@ -170,9 +170,9 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         config = self.get_config()    # config has your credentials and the hostname of the Management Console
 
         resp_json = None
-
-        # Create a URL to connect to
-        url = self._base_url + endpoint
+        
+        # Create a URL to connect to  TODO self._base_url is None and failing
+        url = "https://" + config['smc_host'] + endpoint
 
         if not self._api_session:
             ret_val = self._login(config)
@@ -294,7 +294,7 @@ def main():
         try:
             login_url = CiscoSecureNetworkAnalyticsConnector._get_phantom_base_url() + '/login'
 
-            print("Accessing the Login page")
+            print("Accessing the Login page {}".format(login_url))
             r = requests.get(login_url, verify=False)
             csrftoken = r.cookies['csrftoken']
 
@@ -312,7 +312,9 @@ def main():
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            # TODO when running under the VSCODE debugger we need to set the session_id to None, and not fail
+            session_id = None
+            # exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()

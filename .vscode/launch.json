@@ -11,14 +11,15 @@
             "type": "python",
             // This containter contains a virtual environment at /opt/prezo
             "python": "/opt/phantom/usr/bin/python",
-            "stopOnEntry": false,
+            "pythonPath": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3",
+            "stopOnEntry": true,
             "request": "launch",
             // "program": "${file}",
             // use the following format of absolute path so the imports work properly
             "program": "${file}",
             // "envFile": "${workspaceFolder}/.env/debug.env",
-            "env": {"PHANTOM_HOME": "/opt/phantom", "PYTHONPATH": "{PHANTOM_HOME}/www:${PHANTOM_HOME}/lib3:${PHANTOM_HOME}/pycommon3:$PYTHONPATH"},
-            "args": ["-u admin", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons.test.json"],
+            // "env": {"PYTHONPATH": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3"},
+            "args": ["-u admin", "-p password", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons/test.json"],
             "console": "integratedTerminal"
         }
     ]

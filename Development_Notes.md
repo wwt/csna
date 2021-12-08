@@ -133,3 +133,12 @@ After making your changes:
 ```
 GIT_SSH_COMMAND='ssh -i /home/phantom/.ssh/id_github' git push origin main
 ```
+
+Testing interactively
+---------------------
+
+You can test your program without installing the application or using the web GUI by the following:
+
+```
+phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p ffd47c7827cb test_jsons/test.json
+```

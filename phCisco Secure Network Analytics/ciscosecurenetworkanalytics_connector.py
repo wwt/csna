@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/opt/phantom/usr/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------
 # Phantom sample App Connector python file
@@ -126,16 +126,16 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _logout(self, config):
+    def _logout(self):
         """ Logout of the session with the Management Console
 
         Args:
-            config ([type]): [description]
+            none
         """
-        url = self._base_url + config["smc_host"] + "/token/"
-        r = self.api_session.delete(uri, timeout=30, config.get('verify_server_cert', False))
+        # url = self._base_url + config["smc_host"] + "/token/"
+        # r = self.api_session.delete(uri, timeout=30, config.get('verify_server_cert', False))
         # self.api_session.headers.update({XSRF_HEADER_NAME: None})
-        self._api_session = None    # we test if this variable is True to determine if we have a session
+        self._api_session = self._api_session.close()    # close the session and return None
 
         return
 
@@ -149,12 +149,12 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         self.api_session = requests.Session()
         url = self._base_url + config["smc_host"] + "/token/v2/authenticate"
         login_request_data = {
-            "username": config['smc_userid'],
+            "username": config['smc_username'],
             "password": config['smc_password']
              }
         try:
             r = self.api_session.request("POST", url, config.get('verify_server_cert', False), data=login_request_data)
-        except Exception as e:
+        except requests.exceptions.ConnectionError as e:
             return 504  # Gateway Time-Out - likely the Management Console is unreachable 
 
         if r.status_code == r.OK:
@@ -201,9 +201,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         self.save_progress("Connecting to Management Console")
         # make rest call
-        ret_val, response = self._make_rest_call(
-            TEST_CONNECTIVITY, action_result, params=None, headers=None
-        )
+        ret_val, response = self._make_rest_call(TEST_CONNECTIVITY, action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -236,9 +234,9 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         self.debug_print("action_id", self.get_action_identifier())
 
-        if action_id == 'test_connectivity':
+        if action_id == 'test connectivity':
             ret_val = self._handle_test_connectivity(param)
-        if action_id == 'retrieve_flows':
+        if action_id == 'retrieve flows':
             ret_val = self._handle_retrieve_flows(param)
 
         return ret_val

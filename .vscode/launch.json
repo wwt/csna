@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    // Documentation @joelwking
+    // https://code.visualstudio.com/docs/python/debugging
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            // This containter contains a virtual environment at /opt/prezo
+            "python": "/opt/phantom/usr/bin/python",
+            "stopOnEntry": false,
+            "request": "launch",
+            // "program": "${file}",
+            // use the following format of absolute path so the imports work properly
+            "program": "${file}",
+            // "envFile": "${workspaceFolder}/.env/debug.env",
+            "env": {"PHANTOM_HOME": "/opt/phantom", "PYTHONPATH": "{PHANTOM_HOME}/www:${PHANTOM_HOME}/lib3:${PHANTOM_HOME}/pycommon3:$PYTHONPATH"},
+            "args": ["-u admin", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons.test.json"],
+            "console": "integratedTerminal"
+        }
+    ]
+}

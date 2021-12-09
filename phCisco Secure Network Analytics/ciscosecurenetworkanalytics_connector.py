@@ -277,6 +277,7 @@ def main():
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-d', '--debug', help='used when executing in debug mode with VSCode', type=bool, default=False, required=False)
 
     args = argparser.parse_args()
     session_id = None
@@ -312,9 +313,11 @@ def main():
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
-            # TODO when running under the VSCODE debugger we need to set the session_id to None, and not fail
-            session_id = None
-            # exit(1)
+            # When running under the VSCODE debugger we need to set the session_id to None, and not fail
+            if args.debug:
+                session_id = None
+            else:
+                exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()

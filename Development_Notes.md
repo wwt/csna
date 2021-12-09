@@ -90,7 +90,7 @@ From your terminal prompt, create a directory in your home directory `app`
 
 ```
 mkdir app
-``
+```
 
 Set your username and email address in the get configuration.
 
@@ -134,6 +134,32 @@ After making your changes:
 GIT_SSH_COMMAND='ssh -i /home/phantom/.ssh/id_github' git push origin main
 ```
 
+
+Utility progrm PHENV
+--------------------
+
+The program `phenv` is used to issue a number of subcommands to manage the installation. It is also used to execute Python apps using the correct python interpreteter.
+
+For help, `phenv --help` will show the commands.
+
+```shell
+[phantom@appdev ~]$ phenv 
+
+Usage: /opt/phantom/bin/phenv command [args]
+phenv will set the PATH and PYTHONPATH as neccessary to invoke python/pip for Splunk Phantom
+Example: /opt/phantom/bin/phenv python /opt/phantom/bin/ibackup.pyc --setup
+
+You can also use the "phenv <command>" to administrate certain aspects of Splunk Phantom
+Example: /opt/phantom/bin/phenv set_preference --help
+Run "/opt/phantom/bin/phenv help " to get a list of available commands
+```
+
+>Note: you will need to use `phenv` to determine the Python interpreter and PYTHONPATH to configure your `.vscode/launch.json` for debugging.
+
+>Note: VSCode when running in debugging mode, will look in your home directory `/home/phantom` for `.vscode/launch.json`, so you need to copy from `csna/.vscode/launch.json` to your home directory before running the debugger.
+
+
+
 Testing interactively
 ---------------------
 
@@ -142,3 +168,7 @@ You can test your program without installing the application or using the web GU
 ```
 phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p ffd47c7827cb test_jsons/test.json
 ```
+
+Remote Debugging with VS Code
+-----------------------------
+

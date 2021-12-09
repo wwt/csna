@@ -19,7 +19,7 @@
             "program": "${file}",
             // "envFile": "${workspaceFolder}/.env/debug.env",
             // "env": {"PYTHONPATH": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3"},
-            "args": ["-u admin", "-p password", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons/test.json"],
+            "args": ["-u admin", "-p password", "-d True", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons/test.json"],
             "console": "integratedTerminal"
         }
     ]

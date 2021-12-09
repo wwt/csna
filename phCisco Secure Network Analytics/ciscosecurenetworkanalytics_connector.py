@@ -208,9 +208,6 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
 
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        # return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-
     def _handle_retrieve_flows(self, param):
         """
         Retrieve flows from Management Console

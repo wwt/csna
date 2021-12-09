@@ -132,11 +132,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         Args:
             none
         """
-        # url = self._base_url + config["smc_host"] + "/token/"
-        # r = self.api_session.delete(uri, timeout=30, config.get('verify_server_cert', False))
-        # self.api_session.headers.update({XSRF_HEADER_NAME: None})
-        self._api_session = self._api_session.close()    # close the session and return None
 
+        self._api_session = self._api_session.close()    # close the session and return None to the _api_session
         return
 
     def _login(self, config):
@@ -147,13 +144,13 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             config (dict): values from the app configuration description
         """
         self.api_session = requests.Session()
-        url = "https://" + config["smc_host"] + "/token/v2/authenticate"
+        url = self._base_url + "/token/v2/authenticate"
         login_request_data = {
             "username": config['smc_username'],
             "password": config['smc_password']
              }
         try:
-            r = self.api_session.request("POST", url, config.get('verify_server_cert', False), data=login_request_data)
+            r = self.api_session.request("POST", url, verify=config.get('verify_server_cert', False), data=login_request_data)
         except requests.exceptions.ConnectionError as e:
             return 504  # Gateway Time-Out - likely the Management Console is unreachable 
 
@@ -171,16 +168,14 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         resp_json = None
         
-        # Create a URL to connect to  TODO self._base_url is None and failing
-        url = "https://" + config['smc_host'] + endpoint
+        url = self._base_url + endpoint
 
         if not self._api_session:
             ret_val = self._login(config)
             if ret_val != 200:
-                # self.save_progress("Unable to connect to Management Controller")
                 return RetVal(
                     action_result.set_status(
-                        phantom.APP_ERROR, "Unable to connect to Management Controller:{0}".format(ret_val)
+                        phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(ret_val, url)
                     ), resp_json
                 )
         if endpoint == TEST_CONNECTIVITY:
@@ -259,13 +254,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """
         self.debug_print("{} INITIALIZE {}".format(BANNER, time.asctime()))
 
-        self._base_url = config.get('base_url')
+        self._base_url = "https://" + config['smc_host']
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
-        self.save_state(self._state)
+        # If there was no state available, the variable will be None, save_state requires a dictionary, not NoneType!
+        if self._state:
+            self.save_state(self._state)
         return phantom.APP_SUCCESS
 
 

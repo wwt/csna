@@ -158,7 +158,7 @@ Run "/opt/phantom/bin/phenv help " to get a list of available commands
 
 >Note: VSCode when running in debugging mode, will look in your home directory `/home/phantom` for `.vscode/launch.json`, so you need to copy from `csna/.vscode/launch.json` to your home directory before running the debugger.
 
-
+>Note: VSCode has some issues with the `main()` function of the program, as it attempts to connect to the `localhost` I added modifications in [commit](https://github.com/joelwking/csna/commit/a6107055eaf740a3e3022a63d9889240ec7857a5) to circumvent these issues, at least for now.
 
 Testing interactively
 ---------------------
@@ -171,4 +171,5 @@ phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p ffd47c7827cb
 
 Remote Debugging with VS Code
 -----------------------------
+
 

@@ -156,7 +156,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             "password": config['smc_password']
              }
         try:
-            r = self.api_session.request("POST", url, verify=config.get('verify_server_cert', False), data=login_request_data)
+            r = self.api_session.request("POST", url, verify=config.get('verify_cert', False), data=login_request_data)
         except requests.exceptions.ConnectionError as e:
             return 504  # Gateway Time-Out - likely the Management Console is unreachable 
 
@@ -165,31 +165,37 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
                 if cookie.name == XSRF_HEADER_NAME:
                     self.api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
                     break
-        return r.status_code
+        return r
 
     def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
         config = self.get_config()    # config has your credentials and the hostname of the Management Console
 
-        resp_json = None
+        # resp_json = None
         
         url = self._base_url + endpoint
 
         if not self._api_session:
-            ret_val = self._login(config)
-            if ret_val != 200:
+            r = self._login(config)
+            if not (r.status_code in SUCCESSFUL):
                 return RetVal(
                     action_result.set_status(
                         phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(ret_val, url)
-                    ), resp_json
+                    ), None  #resp_json
                 )
         if endpoint == TEST_CONNECTIVITY:
-            return self._process_response(ret_val, action_result)
+            return self._process_response(r, action_result)
 
-        # TODO  Do the REST CALL HERE
-
-        return self._process_response(ret_val, action_result)
+        try:
+            r = self._api_session.request(method, url, verify=config.get('verify_cert', False), **kwargs)
+        except requests.exceptions.ConnectionError as e:
+            return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(504, url)
+                    ), None )  # resp_json
+            
+        return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
         # Add an action result object to self (BaseConnector) to represent the action for this param
@@ -286,7 +292,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """
         self.debug_print("{} INITIALIZE {}".format(BANNER, time.asctime()))
 
-        self._base_url = "https://" + config['smc_host']
+        self._base_url = HTTPS + config['smc_host']
 
         return phantom.APP_SUCCESS
 

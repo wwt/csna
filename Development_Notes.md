@@ -58,6 +58,13 @@ App Development Architecture and App Wizzard
 ---------------------------------------------
 Documentation for [Develop Apps for Splunk SOAR (On-premises)](https://docs.splunk.com/Documentation/SOARonprem/5.1.0/DevelopApps/Overview)
 
+
+Phantom API Documentation
+-------------------------
+Splunk SOAR app authoring API
+https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/AppDevAPIRef
+
+
 Sample Use Case
 ---------------
 Example Python code to get the flows for a specific IP in Stealthwatch using the REST API.

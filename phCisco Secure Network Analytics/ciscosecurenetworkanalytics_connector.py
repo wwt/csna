@@ -1,9 +1,11 @@
 #!/opt/phantom/usr/bin/python
 # -*- coding: utf-8 -*-
-# -----------------------------------------
-# Phantom sample App Connector python file
-# -----------------------------------------
-
+#
+#      Copyright (c) 2021 World Wide Technology
+#      All rights reserved.
+#
+#      author: Joel W. King @joelwking - World Wide Technology 
+#
 # Python 3 Compatibility imports
 from __future__ import print_function, unicode_literals
 
@@ -14,9 +16,13 @@ from phantom.action_result import ActionResult
 
 # Usage of the consts file is recommended
 from ciscosecurenetworkanalytics_consts import *
+
+# System related imports
 import requests
 import json
 import time
+from datetime import datetime
+from datetime import timedelta
 from bs4 import BeautifulSoup
 
 
@@ -217,6 +223,35 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
         return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+
+    def _calculate_timestamp(self, param):
+        """
+        Calculate the timestamp based on the user input from the GUI.
+        If the start_time is not specified, use the current Zulu time minus time_span.
+        If the time_span is not specified, use 60 minutes.
+        
+        Returns a tuple of the start and end time in ISO8601 format
+        """
+        
+        time_span = param.get('time_span', TIME_SPAN)
+
+        current_time = datetime.utcnow()
+        default_start_time = (current_time - timedelta(minutes=time_span)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        start_time = param.get('start_time', default_start_time)
+
+        try:
+            start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ')
+        except (ValueError, TypeError) as e:
+            self.save_progress("Invalid time format: {} using default".format(e))
+            start_time = default_start_time
+        #
+        #  Now we have determined the start time, calculate the end time
+        #
+        end_time = (start_time + timedelta(minutes=time_span))
+        
+        #  Convert to ISO8601 format and return
+        return (start_time.strftime('%Y-%m-%dT%H:%M:%SZ'), 
+                end_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
     def handle_action(self, param):
         ret_val = phantom.APP_SUCCESS

@@ -42,7 +42,7 @@
             "type": "investigate",
             "read_only": true,
             "parameters": {"timespan": {
-                           "description": "Timespan (minutes) default 60 minutes",
+                           "description": "Timespan (minutes), default=60 minutes",
                            "data_type": "numeric",
                            "required": false
               },
@@ -50,7 +50,12 @@
                            "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, if not specified, last hour",
                            "data_type": "string",
                            "required": false
-  },
+              },
+                           "record_limit": {
+                           "description": "Maximum number of flow records to return, default=50",
+                           "data_type": "numeric",
+                           "required": false
+               },
                            "malicious_ip": {
                            "description": "Malicious IP address as target for search",
                            "contains": [ "ip" ],

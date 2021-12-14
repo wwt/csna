@@ -23,6 +23,7 @@ import json
 import time
 from datetime import datetime
 from datetime import timedelta
+from collections import namedtuple
 from bs4 import BeautifulSoup
 
 
@@ -150,6 +151,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             config (dict): values from the app configuration description
         """
         self.api_session = requests.Session()
+        rl = namedtuple('Requestslite', ['status_code'])
+        
         url = self._base_url + "/token/v2/authenticate"
         login_request_data = {
             "username": config['smc_username'],
@@ -158,9 +161,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         try:
             r = self.api_session.request("POST", url, verify=config.get('verify_cert', False), data=login_request_data)
         except requests.exceptions.ConnectionError as e:
-            return 504  # Gateway Time-Out - likely the Management Console is unreachable 
+            rl.status_code = 504  # Gateway Time-Out - likely the Management Console is unreachable 
+            return rl
 
-        if r.status_code == r.OK:
+        if r.status_code in SUCCESSFUL:
             for cookie in r.cookies:
                 if cookie.name == XSRF_HEADER_NAME:
                     self.api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
@@ -181,7 +185,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             if not (r.status_code in SUCCESSFUL):
                 return RetVal(
                     action_result.set_status(
-                        phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(ret_val, url)
+                        phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(r.status_code, url)
                     ), None  #resp_json
                 )
         if endpoint == TEST_CONNECTIVITY:

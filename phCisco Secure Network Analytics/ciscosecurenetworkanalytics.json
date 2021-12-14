@@ -21,7 +21,7 @@
                       "smc_password": {"description": "Password", "data_type": "password", "required": true},
                       "smc_host": {"description": "Management Console Hostname/IP", "data_type": "string", "required": true},
                       "smc_tenant": {"description": "Tenant", "data_type": "string", "required": true},
-                      "verify_cert": {"description": "Verify Server Certificate default=False", "data_type": "boolean", "required": false}},
+                      "verify_cert": {"description": "Verify Server Certificate", "data_type": "boolean", "required": false}},
     "actions": [
         {
             "action": "test connectivity",

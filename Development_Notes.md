@@ -205,7 +205,7 @@ Create the tar file
 See App installation in this link  https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/Connector
 ```
 cd ~/app/csna
-tar -zcvf 'phCisco Secure Network Analytics'.tgz 'phCisco Secure Network Analytics'
+tar -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
 ```
 
 Then download the tar file (to your Downloads directory perhaps) and import it into your Splunk SOAR web UI.

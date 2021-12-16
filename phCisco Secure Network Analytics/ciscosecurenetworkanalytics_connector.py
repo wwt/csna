@@ -47,8 +47,9 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # modify this as you deem fit.
         self._base_url = None
 
-        # Contains the requests session object
+        # Contains the requests session object, cookie expiration timer
         self._api_session = None
+        self._api_session_timer = datetime.utcnow()
 
     def _process_empty_response(self, response, action_result):
         if response.status_code == 200:
@@ -133,13 +134,20 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
+    def _keepalive(self):
+        """ Verify if the login cookie continues to be valid, otherwise, force a logout, to force a re-login
+        """
+        self.debug_print("Entering _keepalive")
+
+        if datetime.utcnow() > (self._api_session_timer + timedelta(minutes=COOKIE_EXPIRES)):
+            self.debug_print("Logging out of session due to Cookie expiration of {} minutes.".format(COOKIE_EXPIRES))
+            self._logout()
+        return
+
     def _logout(self):
         """ Logout of the session with the Management Console
-
-        Args:
-            none
         """
-
+        self.debug_print("Entering _logout")
         self._api_session = self._api_session.close()    # close the session and return None to the _api_session
         return
 
@@ -150,8 +158,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         Args:
             config (dict): values from the app configuration description
         """
-        self.api_session = requests.Session()
-        rl = namedtuple('Requestslite', ['status_code'])
+        self._api_session = requests.Session()
+        self._api_session_timer = datetime.utcnow()
+
+        rl = namedtuple('Requestslite', ['status_code'])   # Make a NamedTuple to mimic the Requests Object for Timeouts
         
         url = self._base_url + "/token/v2/authenticate"
         login_request_data = {
@@ -159,7 +169,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             "password": config['smc_password']
              }
         try:
-            r = self.api_session.request("POST", url, verify=config.get('verify_cert', False), data=login_request_data)
+            r = self._api_session.request("POST", url, verify=config.get('verify_cert', False), data=login_request_data)
         except requests.exceptions.ConnectionError as e:
             rl.status_code = 504  # Gateway Time-Out - likely the Management Console is unreachable 
             return rl
@@ -167,7 +177,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         if r.status_code in SUCCESSFUL:
             for cookie in r.cookies:
                 if cookie.name == XSRF_HEADER_NAME:
-                    self.api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
+                    self._api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
                     break
         return r
 
@@ -180,6 +190,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         
         url = self._base_url + endpoint
 
+        self._keepalive()
         if not self._api_session:
             r = self._login(config)
             if not (r.status_code in SUCCESSFUL):

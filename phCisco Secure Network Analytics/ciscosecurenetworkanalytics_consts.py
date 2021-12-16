@@ -4,4 +4,5 @@ BANNER = 'CSNA'                                            # Banner for debug ou
 TEST_CONNECTIVITY = '/test_connectivity'                   # Endpoint value indicating we are simply testing connectivity
 TIME_SPAN = 60                                             # Default value used to calculate the end timestamp for returning flow records
 SUCCESSFUL = (200, 201, 202, 203, 204, 205, 206)           # Client Request Successful
-HTTPS = 'https://'                                         # Hypertext Transfer Protocol Secure (HTTPS)                               
+HTTPS = 'https://'                                         # Hypertext Transfer Protocol Secure (HTTPS)
+COOKIE_EXPIRES = 20 - 1                                    # The cookie returned by Stealthwatch expires in 20 minutes                  

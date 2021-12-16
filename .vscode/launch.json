@@ -7,18 +7,18 @@
     // Documentation @joelwking
     // https://code.visualstudio.com/docs/python/debugging
         {
-            "name": "Python: Current File",
+            "name": "Python: Current File IN APP/CSNA",
             "type": "python",
             // This containter contains a virtual environment at /opt/prezo
             "python": "/opt/phantom/usr/bin/python",
-            "pythonPath": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3",
+            // "pythonPath": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3",
             "stopOnEntry": true,
             "request": "launch",
             // "program": "${file}",
             // use the following format of absolute path so the imports work properly
             "program": "${file}",
             // "envFile": "${workspaceFolder}/.env/debug.env",
-            // "env": {"PYTHONPATH": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3"},
+            "env": {"PYTHONPATH": "/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3"},
             "args": ["-u admin", "-p password", "-d True", "/home/phantom/app/csna/phCisco Secure Network Analytics/test_jsons/test.json"],
             "console": "integratedTerminal"
         }

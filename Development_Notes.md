@@ -173,7 +173,27 @@ phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p ffd47c7827cb
 Remote Debugging with VS Code
 -----------------------------
 
->Note: you will need to use `phenv` to determine the Python interpreter and PYTHONPATH to configure your `.vscode/launch.json` for debugging.
+You will need to use `phenv` to determine the Python interpreter and PYTHONPATH to configure your `.vscode/launch.json` for debugging.
+
+Rather than look at the source code of `phenv`, just run python from it, and check what path and executable is being used.
+
+```python
+[phantom@appdev csna]$ phenv python
+Python 3.6.13+ (heads/3.6-dirty:a64de63, Mar 26 2021, 15:25:25) 
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-44)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.getenv('PYTHONPATH')
+'/opt/phantom/www:/opt/phantom/lib3:/opt/phantom/pycommon3:/opt/phantom/www:/opt/phantom/lib:/opt/phantom/pycommon:/opt/phantom/www:/opt/phantom/lib:/opt/phantom/pycommon:/opt/phantom/www:/opt/phantom/lib:/opt/phantom/pycommon:/opt/phantom/www:/opt/phantom/lib:/opt/phantom/pycommon:'
+>>> 
+```
+To get the full path of the interpreter:
+
+```python
+>>> import sys
+>>> sys.executable
+'/opt/phantom/usr/bin/python'
+```
 
 >Note: VSCode when running in debugging mode, will look in your home directory `/home/phantom` for `.vscode/launch.json`, so you need to copy from `csna/.vscode/launch.json` to your home directory before running the debugger.
 

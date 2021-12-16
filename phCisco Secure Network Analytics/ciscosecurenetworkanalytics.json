@@ -4,13 +4,13 @@
     "description": "Cisco Secure Network Analytics (formerly Stealthwatch)",
     "type": "information",
     "product_vendor": "Cisco",
-    "logo": "ciscosecurenetworkanalytics.png",
-    "logo_dark": "ciscosecurenetworkanalytics_dark.png",
+    "logo": "logo_cisco.svg",
+    "logo_dark": "logo_cisco_dark.svg",
     "product_name": "Cisco",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "World Wide Technology",
-    "license": "Copyright (c) World Wide Technology, 2021",
+    "license": "Copyright (c) World Wide Technology, 2021-2022",
     "app_version": "1.0.0",
     "utctime_updated": "2021-12-06T16:13:03.261659Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
@@ -20,13 +20,13 @@
     "configuration": {"smc_username": {"description": "Username", "data_type": "string", "required": true},
                       "smc_password": {"description": "Password", "data_type": "password", "required": true},
                       "smc_host": {"description": "Management Console Hostname/IP", "data_type": "string", "required": true},
-                      "smc_tenant": {"description": "Tenant", "data_type": "string", "required": true},
-                      "verify_cert": {"description": "Verify Server Certificate", "data_type": "boolean", "required": false}},
+                      "smc_tenant": {"description": "Tenant (Domain)", "data_type": "string", "required": true},
+                      "verify_cert": {"description": "Verify server certificate", "data_type": "boolean", "required": false}},
     "actions": [
         {
             "action": "test connectivity",
             "identifier": "test connectivity",
-            "description": "Validate connectivity to the Management Console API using supplied configuration",
+            "description": "Validate connectivity to the Management Console API using the asset configuration",
             "verbose": "",
             "type": "test",
             "read_only": true,
@@ -42,22 +42,22 @@
             "type": "investigate",
             "read_only": true,
             "parameters": {"timespan": {
-                           "description": "Timespan (minutes), default=60 minutes",
+                           "description": "Timespan (minutes), defaults to 60 minutes",
                            "data_type": "numeric",
                            "required": false
               },
                            "start_time": {
-                           "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, if not specified, last hour",
+                           "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, defaults to one hour from current time.",
                            "data_type": "string",
                            "required": false
               },
                            "record_limit": {
-                           "description": "Maximum number of flow records to return, default=50",
+                           "description": "Maximum number of flow records to return, defaults to 2000",
                            "data_type": "numeric",
                            "required": false
                },
                            "malicious_ip": {
-                           "description": "Malicious IP address as target for search",
+                           "description": "Malicious IP address (Subject) for search target",
                            "contains": [ "ip" ],
                            "primary": true,
                            "data_type": "string",

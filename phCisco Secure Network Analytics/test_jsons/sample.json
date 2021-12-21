@@ -5,7 +5,7 @@
                "smc_host": "192.0.2.1",
                "smc_username": "admin",
                "smc_password": "redacted",
-               "smc_tenant": "default"
+               "smc_tenant": "example.local"
     },
     "debug_level": 3,
     "identifier": "retrieve flows",

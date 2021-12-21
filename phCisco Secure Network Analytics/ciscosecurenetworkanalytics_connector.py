@@ -1,7 +1,7 @@
 #!/opt/phantom/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-#      Copyright (c) 2021 World Wide Technology
+#      Copyright (c) 2021 - 2022  World Wide Technology
 #      All rights reserved.
 #
 #      author: Joel W. King @joelwking - World Wide Technology 
@@ -46,6 +46,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
         self._base_url = None
+        self._verify = False             # should we verify the server certificate?
+        self._domains = {}               # maps the domain names to the numerical ID
 
         # Contains the requests session object, cookie expiration timer
         self._api_session = None
@@ -148,6 +150,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """ Logout of the session with the Management Console
         """
         self.debug_print("Entering _logout")
+
+        url = self._base_url + LOGOUT
+        try:
+            r = self._api_session.request("DELETE", url, verify=self._verify)
+            self.debug_print("_logout status code: {}".format(r.status_code))
+        except requests.exceptions.ConnectionError as e:
+            # Don't fail if we cannot reach the Management Console for a logout
+            self.debug_print("ConnectionError: {}".format(e))
+
         self._api_session = self._api_session.close()    # close the session and return None to the _api_session
         return
 
@@ -163,13 +174,13 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         rl = namedtuple('Requestslite', ['status_code'])   # Make a NamedTuple to mimic the Requests Object for Timeouts
         
-        url = self._base_url + "/token/v2/authenticate"
+        url = self._base_url + AUTHENTICATE
         login_request_data = {
             "username": config['smc_username'],
             "password": config['smc_password']
              }
         try:
-            r = self._api_session.request("POST", url, verify=config.get('verify_cert', False), data=login_request_data)
+            r = self._api_session.request("POST", url, verify=self._verify, data=login_request_data)
         except requests.exceptions.ConnectionError as e:
             rl.status_code = 504  # Gateway Time-Out - likely the Management Console is unreachable 
             return rl
@@ -203,7 +214,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             return self._process_response(r, action_result)
 
         try:
-            r = self._api_session.request(method, url, verify=config.get('verify_cert', False), **kwargs)
+            r = self._api_session.request(method, url, verify=self._verify, **kwargs)
         except requests.exceptions.ConnectionError as e:
             return RetVal(
                     action_result.set_status(
@@ -243,7 +254,51 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             param ([type]): [description]
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
+
+        if not self._get_domains(param):    # returned is the domain dictionary or empty dictionary
+            return action_result.set_status(phantom.APP_ERROR, "Could not retrieve Tenants(Domains)")
+        
+        config = self.get_config()
+        tenant_id = self._domains.get(config['smc_tenant'])
+        if not tenant_id:
+            return action_result.set_status(phantom.APP_ERROR, "Tenant not found on SMC")
+        
+        #
+        # Now POST to start the flow run
+        #
+
+        #
+        # Get the data from the flow, checking if the data is available 
+        #
+    
+        action_result.add_data(response)   ### TODO response not yet defined.
+
         return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        # return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _get_domains(self, param):
+        """ Get the available Domains (Tenants) and build a dictionary
+            so we can associate the displayName with the associated id.
+            The user will not know the id, rather the displayName.
+        """
+        self.debug_print("Entering _get_domains")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        ret_val, response = self._make_rest_call(GETDOMAINS, action_result, headers=None)
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+        #
+        # TODO  Run your debugger here to inspect the ret_val and response
+        # TODO  In chucknorris, ret_val is the requests 'object' and 'response' is the data
+        #
+        data = response.get('data')
+        for domain in data:
+            display_name = domain.get('displayName')
+            if display_name:
+                self._domains[display_name] = domain.get('id')
+
+        self.save_progress("Populated the domain array with {} domain(s)".format(len(self._domains)))
+        return self.domains
 
     def _calculate_timestamp(self, param):
         """
@@ -296,24 +351,20 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         # get the asset config
         config = self.get_config()
-        """
-        # Access values in asset config by the name
 
-        # Required values can be accessed directly
-        required_config_name = config['required_config_name']
-
-        # Optional values should use the .get() function
-        optional_config_name = config.get('optional_config_name')
-        """
         self.debug_print("{} INITIALIZE {}".format(BANNER, time.asctime()))
 
         self._base_url = HTTPS + config['smc_host']
+        self._verify = config.get('verify_cert', False)
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
         # Save the state, this data is saved across actions and app upgrades
         # If there was no state available, the variable will be None, save_state requires a dictionary, not NoneType!
+
+        self._logout()
+
         if self._state:
             self.save_state(self._state)
         return phantom.APP_SUCCESS

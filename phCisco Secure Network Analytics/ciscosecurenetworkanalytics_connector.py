@@ -262,19 +262,32 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         tenant_id = self._domains.get(config['smc_tenant'])
         if not tenant_id:
             return action_result.set_status(phantom.APP_ERROR, "Tenant not found on SMC")
+        #
+        # Now POST to start the flow query
+        #
+        end_point = INITIATE_FLOW_QUERY.format(tenant_id)
         
-        #
-        # Now POST to start the flow run
-        #
+        start_ts, end_ts = self._calculate_timestamp(param)
+        record_limit = params.get('record_limit', DEFAULT_RECORD_LIMIT)
+        malicious_ip = params.get('malicious_ip')
 
+        filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
+        self.save_progress("Initating flow query for {}".format(end_point))
+        ret_val, response = self._make_rest_call(end_point, action_result, data=json.dumps(filter))
+
+        if phantom.is_fail(ret_val):
+            self.save_progress("Flow query failed!")
+            return action_result.get_status()
+
+        self.save_progress("Flow Query Initiated successfully", **response)
+        self.debug_print("Flow Query Initiated, returned:", dump_object=response)
         #
         # Get the data from the flow, checking if the data is available 
         #
-    
-        action_result.add_data(response)   ### TODO response not yet defined.
+        # 
+        # action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-        # return action_result.set_status(phantom.APP_SUCCESS)
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_domains(self, param):
         """ Get the available Domains (Tenants) and build a dictionary

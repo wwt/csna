@@ -26,8 +26,8 @@
         {
             "action": "test connectivity",
             "identifier": "test connectivity",
-            "description": "Validate connectivity to the Management Console API using the asset configuration",
-            "verbose": "",
+            "description": "Validate credentials and connectivity to the API using the values specified in the asset configuration",
+            "verbose": "Before you can use the Secure Network Analytics API, you need to authenticate. The same credentials (login/password pair) you use to log in to the management console is used for accessing the API.",
             "type": "test",
             "read_only": true,
             "parameters": {},
@@ -38,22 +38,27 @@
             "action": "retrieve flows",
             "identifier": "retrieve flows",
             "description": "Given a malicious IP address, return flow data beginning at the start time for the specified duration.",
-            "verbose": "",
+            "verbose": "Provides the ability to create flow searches and retrieve the search results Currently this action only accepts one IP address, which is specified in subject of the filter",
             "type": "investigate",
             "read_only": true,
             "parameters": {"timespan": {
                            "description": "Timespan (minutes), defaults to 60 minutes",
                            "data_type": "numeric",
+                           "default": 60,
+                           "order": 3,
                            "required": false
               },
                            "start_time": {
                            "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, defaults to one hour from current time.",
                            "data_type": "string",
+                           "order": 2,
                            "required": false
               },
                            "record_limit": {
-                           "description": "Maximum number of flow records to return, defaults to 2000",
+                           "description": "Maximum number of flow records to return",
                            "data_type": "numeric",
+                           "default": 2000,
+                           "order": 1,
                            "required": false
                },
                            "malicious_ip": {
@@ -61,9 +66,35 @@
                            "contains": [ "ip" ],
                            "primary": true,
                            "data_type": "string",
+                           "order": 0,
                            "required": true
               }},
-            "output": [],
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+                    ],
+            "render": {
+                        "width": 5,
+                        "type": "table",
+                        "title": "ENTER THE TITLE HERE",
+                        "height": 5
+                      },
             "versions": "EQ(*)"
         }
     ]

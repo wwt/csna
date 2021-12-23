@@ -5,11 +5,16 @@ TEST_CONNECTIVITY = '/test_connectivity'                   # Endpoint value indi
 TIME_SPAN = 60                                             # Default value used to calculate the end timestamp for returning flow records
 DEFAULT_RECORD_LIMIT = 2000                                # Default number of flow records to return
 SUCCESSFUL = (200, 201, 202, 203, 204, 205, 206)           # Client Request Successful
+ACCEPTED = 201                                             # Flow Query is accepted
 HTTPS = 'https://'                                         # Hypertext Transfer Protocol Secure (HTTPS)
 COOKIE_EXPIRES = 20 - 1                                    # The cookie returned by Stealthwatch expires in 20 minutes
 AUTHENTICATE = "/token/v2/authenticate"                    # login
 LOGOUT = "/token"                                          # logout
-GETDOMAINS = '/sw-reporting/v1/tenants'                    # returns list of domains (Tenants) configured  
+GET_DOMAINS = '/sw-reporting/v1/tenants'                   # returns list of domains (Tenants) configured  
+                                                           # Get the status of the initiated flow query
+WAIT_FOR_FLOW_RESULTS = 1                                  # Time in seconds to wait for results
+GET_FLOW_STATUS = '/sw-reporting/v2/tenants/{}/flows/queries/{}'
+GET_FLOW_RESULTS = GET_FLOW_STATUS + '/results'            # Returns the flow query results
                                                            # Get Flows Query endpoint and body
                                                            # For now, the only input is the subject IP
 INITIATE_FLOW_QUERY = '/sw-reporting/v2/tenants/{}/flows/queries'

@@ -268,26 +268,67 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         end_point = INITIATE_FLOW_QUERY.format(tenant_id)
         
         start_ts, end_ts = self._calculate_timestamp(param)
-        record_limit = params.get('record_limit', DEFAULT_RECORD_LIMIT)
-        malicious_ip = params.get('malicious_ip')
+        record_limit = param.get('record_limit', DEFAULT_RECORD_LIMIT)
+        malicious_ip = param.get('malicious_ip')
 
         filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
         self.save_progress("Initating flow query for {}".format(end_point))
-        ret_val, response = self._make_rest_call(end_point, action_result, data=json.dumps(filter))
+        ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
 
-        if phantom.is_fail(ret_val):
-            self.save_progress("Flow query failed!")
+        if not ret_val.status_code == ACCEPTED:
+        # if phantom.is_fail(ret_val):
+            self.save_progress("Flow query failed! status: {}".format(ret_val.status_code))
             return action_result.get_status()
 
         self.save_progress("Flow Query Initiated successfully", **response)
         self.debug_print("Flow Query Initiated, returned:", dump_object=response)
+
+        query_id = response['data']['query']['id']  # We need the Tenant(Domain) and the query ID
         #
         # Get the data from the flow, checking if the data is available 
         #
-        # 
-        # action_result.add_data(response)
+        flow_data = self._get_flow_results(param, tenant_id, query_id)
+####
+####    TODO
+####
+        action_result.add_data(flow_data)
 
         return action_result.set_status(phantom.APP_SUCCESS)
+
+###
+###    TODO work on getting the flow results
+###
+    def _get_flow_results(self, param, tenant_id, query_id):
+        """ Query for the percent complete, when 100.0, query for the data 
+            and return it.
+        """
+        self.debug_print("Entering _get_flow_results")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        end_point = GET_FLOW_STATUS.format(tenant_id, query_id)
+        flow_data = {"data": {"flows": []}}
+
+        while True:
+            time.sleep(WAIT_FOR_FLOW_RESULTS)
+            ret_val, response = self._make_rest_call(end_point, action_result)
+            if ret_val.status_code in SUCCESSFUL:
+                if response['data']['query']['percentComplete'] >= 100.0:
+                    self.save_progress("Flow Query Complete", **response)
+                    break
+            else:
+                self.save_progress("Unable to get flow status", **response)
+                return flow_data
+
+        end_point = GET_FLOW_RESULTS.format(tenant_id, query_id)
+        ret_val, response = self._make_rest_call(end_point, action_result)
+        if phantom.is_fail(ret_val):
+            self.save_progress("Unable to get flow results", **response)
+            return flow_data
+        ##
+        # TODO verify the format of response is the same as flow_data
+        #     
+        return response
+
 
     def _get_domains(self, param):
         """ Get the available Domains (Tenants) and build a dictionary
@@ -297,7 +338,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         self.debug_print("Entering _get_domains")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        ret_val, response = self._make_rest_call(GETDOMAINS, action_result, headers=None)
+        ret_val, response = self._make_rest_call(GET_DOMAINS, action_result, headers=None)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
         #

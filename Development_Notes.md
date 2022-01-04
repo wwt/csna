@@ -52,6 +52,9 @@ Host Splunk_SOAR
   HostName 54.237.22.196
   IdentityFile ~/.ssh/customer_training.pem
 ```
+
+>Note: IdentifyFile is optional, if not specified, you will be prompted for the password.
+
 Once connected, the `phantom` user has access to `git` and `python3.6`.
 
 App Development Architecture and App Wizzard
@@ -93,10 +96,10 @@ How to set up the development environment with VSCode and remote SSH
 
 First open the remote SSH to the phantom server in VSCode.
 
-From your terminal prompt, create a directory in your home directory `app`
+From your terminal prompt, create a directory in your home directory `apps`
 
 ```
-mkdir app
+mkdir apps
 ```
 
 Set your username and email address in the get configuration.
@@ -167,7 +170,7 @@ Testing interactively
 You can test your program without installing the application or using the web GUI by the following:
 
 ```
-phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p ffd47c7827cb test_jsons/test.json
+phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p adminpswd test_jsons/test.json
 ```
 
 Remote Debugging with VS Code
@@ -204,8 +207,10 @@ Create the tar file
 -------------------
 See App installation in this link  https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/Connector
 ```
-cd ~/app/csna
+cd ~/apps/csna
 tar -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
 ```
+
+>Note: use `--exclude-from 'phCisco Secure Network Analytics/exclude_files.txt'` to exclude files from the tarball.
 
 Then download the tar file (to your Downloads directory perhaps) and import it into your Splunk SOAR web UI.

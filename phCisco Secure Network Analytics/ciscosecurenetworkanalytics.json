@@ -15,7 +15,7 @@
     "utctime_updated": "2021-12-06T16:13:03.261659Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
     "main_module": "ciscosecurenetworkanalytics_connector.py",
-    "min_phantom_version": "5.1.0.70187",
+    "min_phantom_version": "5.0.1.66250",
     "app_wizard_version": "1.0.0",
     "configuration": {"smc_username": {"description": "Username", "data_type": "string", "required": true},
                       "smc_password": {"description": "Password", "data_type": "password", "required": true},

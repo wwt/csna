@@ -114,7 +114,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Process each 'Content-Type' of response separately
 
         # Process a json response
-        if 'json' in r.headers.get('Content-Type', ''):
+        if 'json' in r.headers.get('Content-Type', '') or \
+           'text/plain' in r.headers.get('Content-Type', ''):     # TODO StealthWatch is returning
             return self._process_json_response(r, action_result)
 
         # Process an HTML response, Do this no matter what the api talks.
@@ -271,13 +272,18 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         record_limit = param.get('record_limit', DEFAULT_RECORD_LIMIT)
         malicious_ip = param.get('malicious_ip')
 
-        filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
+        # filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
+        FILTER_TEMPLATE["startDateTime"] = start_ts
+        FILTER_TEMPLATE["endDateTime"] = end_ts
+        FILTER_TEMPLATE["recordLimit"] = record_limit
+        FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
+        filter = FILTER_TEMPLATE
         self.save_progress("Initating flow query for {}".format(end_point))
         ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
 
-        if not ret_val.status_code == ACCEPTED:
-        # if phantom.is_fail(ret_val):
-            self.save_progress("Flow query failed! status: {}".format(ret_val.status_code))
+        # if not ret_val.status_code == ACCEPTED:
+        if phantom.is_fail(ret_val):
+            self.save_progress("Flow query failed!")
             return action_result.get_status()
 
         self.save_progress("Flow Query Initiated successfully", **response)
@@ -338,7 +344,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         self.debug_print("Entering _get_domains")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        ret_val, response = self._make_rest_call(GET_DOMAINS, action_result, headers=None)
+        ret_val, response = self._make_rest_call(GET_DOMAINS, action_result, headers=REQUEST_HEADERS)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
         #
@@ -352,7 +358,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
                 self._domains[display_name] = domain.get('id')
 
         self.save_progress("Populated the domain array with {} domain(s)".format(len(self._domains)))
-        return self.domains
+        return self._domains
 
     def _calculate_timestamp(self, param):
         """

@@ -272,14 +272,17 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         record_limit = param.get('record_limit', DEFAULT_RECORD_LIMIT)
         malicious_ip = param.get('malicious_ip')
 
+        # TODO correct the template
         # filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
-        FILTER_TEMPLATE["startDateTime"] = start_ts
-        FILTER_TEMPLATE["endDateTime"] = end_ts
-        FILTER_TEMPLATE["recordLimit"] = record_limit
-        FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
+        # FILTER_TEMPLATE["startDateTime"] = start_ts
+        # FILTER_TEMPLATE["endDateTime"] = end_ts
+        # FILTER_TEMPLATE["recordLimit"] = record_limit
+        # FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
         filter = FILTER_TEMPLATE
         self.save_progress("Initating flow query for {}".format(end_point))
-        ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
+        # TODO remove replace the following line
+        request_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+        ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter), headers=request_headers)
 
         # if not ret_val.status_code == ACCEPTED:
         if phantom.is_fail(ret_val):

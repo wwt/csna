@@ -80,4 +80,5 @@ FILTER_TEMPLATE = {
                         "protocol": [],
                         "includeInterfaceData": False
                     }
-                }        
+                }
+FILTER_TEMPLATE = {'startDateTime': '2021-12-15T12:48:52Z', 'endDateTime': '2022-01-05T13:48:52Z', 'recordLimit': 2000}

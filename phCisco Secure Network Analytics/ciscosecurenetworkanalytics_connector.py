@@ -188,7 +188,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         if r.status_code in SUCCESSFUL:
             for cookie in r.cookies:
-                if cookie.name == XSRF_HEADER_NAME:
+                if cookie.name == XSRF_COOKIE_NAME:
                     self._api_session.headers.update({XSRF_HEADER_NAME: cookie.value})
                     break
         return r
@@ -215,6 +215,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             return self._process_response(r, action_result)
 
         try:
+            self.debug_print("api_session.headers", dump_object=self._api_session.headers)
             r = self._api_session.request(method, url, verify=self._verify, **kwargs)
         except requests.exceptions.ConnectionError as e:
             return RetVal(

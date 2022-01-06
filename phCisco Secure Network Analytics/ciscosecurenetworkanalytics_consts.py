@@ -1,5 +1,6 @@
 # Define your constants here
 XSRF_HEADER_NAME = 'X-XSRF-TOKEN'                          # Key name of the authentication token
+XSRF_COOKIE_NAME = 'XSRF-TOKEN'                                 # Name of key in the cookie
 REQUEST_HEADERS = {'Content-type': 'application/json', 
                    'Accept': 'text/plain'}
 BANNER = 'CSNA'                                            # Banner for debug output

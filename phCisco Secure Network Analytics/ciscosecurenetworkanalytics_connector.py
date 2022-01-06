@@ -273,17 +273,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         record_limit = param.get('record_limit', DEFAULT_RECORD_LIMIT)
         malicious_ip = param.get('malicious_ip')
 
-        # TODO correct the template
-        # filter = FILTER_TEMPLATE.format(start_ts, end_ts, record_limit, malicious_ip)
-        # FILTER_TEMPLATE["startDateTime"] = start_ts
-        # FILTER_TEMPLATE["endDateTime"] = end_ts
-        # FILTER_TEMPLATE["recordLimit"] = record_limit
-        # FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
+        FILTER_TEMPLATE["startDateTime"] = start_ts
+        FILTER_TEMPLATE["endDateTime"] = end_ts
+        FILTER_TEMPLATE["recordLimit"] = record_limit
+        FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
         filter = FILTER_TEMPLATE
         self.save_progress("Initating flow query for {}".format(end_point))
         # TODO remove replace the following line
-        request_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-        ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter), headers=request_headers)
+        # request_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+        ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
 
         # if not ret_val.status_code == ACCEPTED:
         if phantom.is_fail(ret_val):
@@ -299,15 +297,12 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         #
         flow_data = self._get_flow_results(param, tenant_id, query_id)
 ####
-####    TODO
+####    TODO we need to check what happens if we have a failure in _get_flow_results
 ####
         action_result.add_data(flow_data)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-###
-###    TODO work on getting the flow results
-###
     def _get_flow_results(self, param, tenant_id, query_id):
         """ Query for the percent complete, when 100.0, query for the data 
             and return it.
@@ -316,27 +311,25 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         end_point = GET_FLOW_STATUS.format(tenant_id, query_id)
-        flow_data = {"data": {"flows": []}}
 
         while True:
             time.sleep(WAIT_FOR_FLOW_RESULTS)
             ret_val, response = self._make_rest_call(end_point, action_result)
-            if ret_val.status_code in SUCCESSFUL:
-                if response['data']['query']['percentComplete'] >= 100.0:
-                    self.save_progress("Flow Query Complete", **response)
-                    break
-            else:
-                self.save_progress("Unable to get flow status", **response)
-                return flow_data
+            if phantom.is_fail(ret_val):
+                self.save_progress("Unable to get flow status")
+                return action_result.get_status()
+                
+            if response['data']['query']['percentComplete'] >= 100.0:
+                self.save_progress("Flow Query Complete", **response)
+                break
 
         end_point = GET_FLOW_RESULTS.format(tenant_id, query_id)
         ret_val, response = self._make_rest_call(end_point, action_result)
         if phantom.is_fail(ret_val):
-            self.save_progress("Unable to get flow results", **response)
-            return flow_data
-        ##
-        # TODO verify the format of response is the same as flow_data
-        #     
+            self.save_progress("Unable to get flow results")
+            return action_result.get_status()
+
+        # the response should look like = flow_data = {"data": {"flows": []}}
         return response
 
 

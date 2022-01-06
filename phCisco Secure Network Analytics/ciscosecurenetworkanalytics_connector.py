@@ -256,7 +256,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not self._get_domains(param):    # returned is the domain dictionary or empty dictionary
+        if not self._get_domains(action_result):    # returned is the domain dictionary or empty dictionary
             return action_result.set_status(phantom.APP_ERROR, "Could not retrieve Tenants(Domains)")
         
         config = self.get_config()
@@ -287,7 +287,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         #
         # Get the data from the flow, checking if the data is available 
         #
-        flow_data = self._get_flow_results(param, tenant_id, query_id)
+        flow_data = self._get_flow_results(action_result, tenant_id, query_id)
 ####
 ####    TODO we need to check what happens if we have a failure in _get_flow_results
 ####
@@ -295,12 +295,11 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_flow_results(self, param, tenant_id, query_id):
+    def _get_flow_results(self, action_result, tenant_id, query_id):
         """ Query for the percent complete, when 100.0, query for the data 
             and return it.
         """
         self.debug_print("Entering _get_flow_results")
-        action_result = self.add_action_result(ActionResult(dict(param)))
 
         end_point = GET_FLOW_STATUS.format(tenant_id, query_id)
 
@@ -325,13 +324,13 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return response
 
 
-    def _get_domains(self, param):
+    def _get_domains(self, action_result):
         """ Get the available Domains (Tenants) and build a dictionary
             so we can associate the displayName with the associated id.
             The user will not know the id, rather the displayName.
         """
         self.debug_print("Entering _get_domains")
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        # action_result = self.add_action_result(ActionResult(dict(param)))
 
         ret_val, response = self._make_rest_call(GET_DOMAINS, action_result, headers=REQUEST_HEADERS)
         if phantom.is_fail(ret_val):

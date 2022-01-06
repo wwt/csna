@@ -215,7 +215,6 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             return self._process_response(r, action_result)
 
         try:
-            self.debug_print("api_session.headers", dump_object=self._api_session.headers)
             r = self._api_session.request(method, url, verify=self._verify, **kwargs)
         except requests.exceptions.ConnectionError as e:
             return RetVal(
@@ -268,22 +267,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # Now POST to start the flow query
         #
         end_point = INITIATE_FLOW_QUERY.format(tenant_id)
-        
-        start_ts, end_ts = self._calculate_timestamp(param)
-        record_limit = param.get('record_limit', DEFAULT_RECORD_LIMIT)
-        malicious_ip = param.get('malicious_ip')
 
-        FILTER_TEMPLATE["startDateTime"] = start_ts
-        FILTER_TEMPLATE["endDateTime"] = end_ts
-        FILTER_TEMPLATE["recordLimit"] = record_limit
-        FILTER_TEMPLATE["subject"]["ipAddresses"]["includes"] = [malicious_ip]
-        filter = FILTER_TEMPLATE
+        filter = FILTER_TEMPLATE 
+        filter["startDateTime"] , filter["endDateTime"] =  self._calculate_timestamp(param)
+        filter["recordLimit"] = param.get('record_limit', DEFAULT_RECORD_LIMIT)
+        filter["subject"]["ipAddresses"]["includes"] = [param.get('malicious_ip')]
+
         self.save_progress("Initating flow query for {}".format(end_point))
-        # TODO remove replace the following line
-        # request_headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
         ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
 
-        # if not ret_val.status_code == ACCEPTED:
         if phantom.is_fail(ret_val):
             self.save_progress("Flow query failed!")
             return action_result.get_status()
@@ -299,7 +291,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 ####
 ####    TODO we need to check what happens if we have a failure in _get_flow_results
 ####
-        action_result.add_data(flow_data)
+        action_result.update_data(flow_data['data']['flows'])
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -354,7 +346,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             if display_name:
                 self._domains[display_name] = domain.get('id')
 
-        self.save_progress("Populated the domain array with {} domain(s)".format(len(self._domains)))
+        self.debug_print("Populated the domain array, {} domain(s)".format(len(self._domains)), dump_object=self._domains)
         return self._domains
 
     def _calculate_timestamp(self, param):

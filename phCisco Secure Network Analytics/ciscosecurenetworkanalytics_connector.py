@@ -251,8 +251,14 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """
         Retrieve flows from Management Console
 
+        We first need to associate the Tenant (Domain) display name with the numeric ID.
+        Update the URL with the ID.
+        Using the parameters specified, build the body of the REST call with these parameters.
+        POST to start the query, using the query ID returned from the POST,
+        Get the results (when complete)
+
         Args:
-            param ([type]): [description]
+            param DICT: Parameters for the app run
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -264,14 +270,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         if not tenant_id:
             return action_result.set_status(phantom.APP_ERROR, "Tenant not found on SMC")
         #
-        # Now POST to start the flow query
+        # POST to start the flow query
         #
         end_point = INITIATE_FLOW_QUERY.format(tenant_id)
-
-        filter = FILTER_TEMPLATE 
-        filter["startDateTime"] , filter["endDateTime"] =  self._calculate_timestamp(param)
-        filter["recordLimit"] = param.get('record_limit', DEFAULT_RECORD_LIMIT)
-        filter["subject"]["ipAddresses"]["includes"] = [param.get('malicious_ip')]
+        filter = self._build_flow_query(param)
 
         self.save_progress("Initating flow query for {}".format(end_point))
         ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
@@ -347,6 +349,18 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         self.debug_print("Populated the domain array, {} domain(s)".format(len(self._domains)), dump_object=self._domains)
         return self._domains
+
+    def _build_flow_query(self, param):
+        """ Substitute the parameters specified into the body of the flow query
+            Additional fields can be specified by updating the parameters for the app
+            and then setting the values in the template (defined in the constants).
+        """
+        filter = FILTER_TEMPLATE 
+        filter["startDateTime"] , filter["endDateTime"] =  self._calculate_timestamp(param)
+        filter["recordLimit"] = param.get('record_limit', DEFAULT_RECORD_LIMIT)
+        filter["subject"]["ipAddresses"]["includes"] = [param.get('malicious_ip', '192.0.2.1')]
+
+        return filter
 
     def _calculate_timestamp(self, param):
         """

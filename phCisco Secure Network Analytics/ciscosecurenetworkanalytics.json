@@ -71,10 +71,38 @@
               }},
             "output": [
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.data.*.peer.ipAddress",
                     "data_type": "string",
-                    "column_name": "status",
+                    "column_name": "Peer IP",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.protocol",
+                    "data_type": "string",
+                    "column_name": "protocol",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.peer.portProtocol.port",
+                    "data_type": "string",
+                    "column_name": "Peer Port",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.statistics.byteCount",
+                    "data_type": "string",
+                    "column_name": "ByteCount",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.statistics.packetCount",
+                    "data_type": "string",
+                    "column_name": "PacketCount",
+                    "column_order": 4
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -90,9 +118,9 @@
                 }
                     ],
             "render": {
-                        "width": 5,
+                        "width": 7,
                         "type": "table",
-                        "title": "ENTER THE TITLE HERE",
+                        "title": "Flow Results Summary",
                         "height": 5
                       },
             "versions": "EQ(*)"

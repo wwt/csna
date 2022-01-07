@@ -1,3 +1,4 @@
 .git*
 .vscode*
 phCisco Secure Network Analytics/__pycache__
+phCisco Secure Network Analytics/test_jsons

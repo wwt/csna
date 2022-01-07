@@ -78,9 +78,9 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.subject.countryCode",
+                    "data_path": "action_result.data.*.peer.countryCode",
                     "data_type": "string",
-                    "column_name": "Subject CC",
+                    "column_name": "Country",
                     "column_order": 1
                 },
                 {
@@ -103,13 +103,13 @@
                 },
                 {
                     "data_path": "action_result.data.*.statistics.byteCount",
-                    "data_type": "string",
+                    "data_type": "numeric",
                     "column_name": "ByteCount",
                     "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.statistics.packetCount",
-                    "data_type": "string",
+                    "data_type": "numeric",
                     "column_name": "PacketCount",
                     "column_order": 6
                 },
@@ -134,7 +134,7 @@
                         "width": 7,
                         "type": "table",
                         "title": "Flow Results Summary",
-                        "height": 5
+                        "height": 10
                       },
             "versions": "EQ(*)"
         }

@@ -19,8 +19,6 @@ https://docs.splunk.com/Documentation/SOARonprem/5.1.0/Install/Login
 
 Initial install credentials are 'admin' and complete instance ID e.g. `i-00a6c83b6fa826feb` as the password. The password for the self-hosted version is `password` You should change the password following the initial login.
 
-The current password is `ffd47c7827cb`.
-
 After setting up the [development environment](https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/SetUpADevEnvironment) and creating the user 'phantom', you can
 logoff and return by using:
 
@@ -212,5 +210,9 @@ tar -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
 ```
 
 >Note: use `--exclude-from 'phCisco Secure Network Analytics/exclude_files.txt'` to exclude files from the tarball.
+
+```
+tar --exclude-from 'phCisco Secure Network Analytics/exclude_files.txt' -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
+```
 
 Then download the tar file (to your Downloads directory perhaps) and import it into your Splunk SOAR web UI.

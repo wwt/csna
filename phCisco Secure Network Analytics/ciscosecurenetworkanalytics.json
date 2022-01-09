@@ -11,7 +11,7 @@
     "product_version_regex": ".*",
     "publisher": "World Wide Technology",
     "license": "Copyright (c) World Wide Technology, 2021-2022",
-    "contributors": {"name": "@joelwking"},
+    "contributors": [ {"name": "Joel W. King"} ],
     "app_version": "1.0.0",
     "utctime_updated": "2021-12-06T16:13:03.261659Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",

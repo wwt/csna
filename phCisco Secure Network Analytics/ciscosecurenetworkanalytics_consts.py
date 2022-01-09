@@ -1,7 +1,7 @@
 # Define your constants here
 XSRF_HEADER_NAME = 'X-XSRF-TOKEN'                          # Key name of the authentication token
 XSRF_COOKIE_NAME = 'XSRF-TOKEN'                                 # Name of key in the cookie
-REQUEST_HEADERS = {'Content-type': 'application/json', 
+REQUEST_HEADERS = {'Content-type': 'application/json',
                    'Accept': 'text/plain'}
 BANNER = 'CSNA'                                            # Banner for debug output
 TEST_CONNECTIVITY = '/test_connectivity'                   # Endpoint value indicating we are simply testing connectivity
@@ -13,13 +13,10 @@ HTTPS = 'https://'                                         # Hypertext Transfer 
 COOKIE_EXPIRES = 20 - 1                                    # The cookie returned by Stealthwatch expires in 20 minutes
 AUTHENTICATE = "/token/v2/authenticate"                    # login
 LOGOUT = "/token"                                          # logout
-GET_DOMAINS = '/sw-reporting/v1/tenants'                   # returns list of domains (Tenants) configured  
-                                                           # Get the status of the initiated flow query
+GET_DOMAINS = '/sw-reporting/v1/tenants'                   # returns list of domains (Tenants) configured
 WAIT_FOR_FLOW_RESULTS = 1                                  # Time in seconds to wait for results
-GET_FLOW_STATUS = '/sw-reporting/v2/tenants/{}/flows/queries/{}'
+GET_FLOW_STATUS = '/sw-reporting/v2/tenants/{}/flows/queries/{}'  # Get the status of the initiated flow query
 GET_FLOW_RESULTS = GET_FLOW_STATUS + '/results'            # Returns the flow query results
-                                                           # Get Flows Query endpoint and body
-                                                           # For now, the only input is the subject IP
 INITIATE_FLOW_QUERY = '/sw-reporting/v2/tenants/{}/flows/queries'
 FILTER_TEMPLATE = {
                     "startDateTime": "{0}",

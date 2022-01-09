@@ -4,7 +4,7 @@
 #      Copyright (c) 2021 - 2022  World Wide Technology
 #      All rights reserved.
 #
-#      author: Joel W. King @joelwking - World Wide Technology 
+#      author: Joel W. King @joelwking - World Wide Technology
 #
 # Python 3 Compatibility imports
 from __future__ import print_function, unicode_literals
@@ -174,7 +174,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         self._api_session_timer = datetime.utcnow()
 
         rl = namedtuple('Requestslite', ['status_code'])   # Make a NamedTuple to mimic the Requests Object for Timeouts
-        
+
         url = self._base_url + AUTHENTICATE
         login_request_data = {
             "username": config['smc_username'],
@@ -182,8 +182,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
              }
         try:
             r = self._api_session.request("POST", url, verify=self._verify, data=login_request_data)
-        except requests.exceptions.ConnectionError as e:
-            rl.status_code = 504  # Gateway Time-Out - likely the Management Console is unreachable 
+        except requests.exceptions.ConnectionError:
+            rl.status_code = 504  # Gateway Time-Out - likely the Management Console is unreachable
             return rl
 
         if r.status_code in SUCCESSFUL:
@@ -198,8 +198,6 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         config = self.get_config()    # config has your credentials and the hostname of the Management Console
 
-        # resp_json = None
-        
         url = self._base_url + endpoint
 
         self._keepalive()
@@ -209,19 +207,19 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
                 return RetVal(
                     action_result.set_status(
                         phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(r.status_code, url)
-                    ), None  #resp_json
+                    ), None  # resp_json
                 )
         if endpoint == TEST_CONNECTIVITY:
             return self._process_response(r, action_result)
 
         try:
             r = self._api_session.request(method, url, verify=self._verify, **kwargs)
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError:
             return RetVal(
                     action_result.set_status(
                         phantom.APP_ERROR, "Unable to connect to Management Controller: {0} {1}".format(504, url)
                     ), None )  # resp_json
-            
+
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
@@ -264,7 +262,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         if not self._get_domains(action_result):    # returned is the domain dictionary or empty dictionary
             return action_result.set_status(phantom.APP_ERROR, "Could not retrieve Tenants(Domains)")
-        
+
         config = self.get_config()
         tenant_id = self._domains.get(config['smc_tenant'])
         if not tenant_id:
@@ -287,18 +285,18 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         query_id = response['data']['query']['id']  # We need the Tenant(Domain) and the query ID
         #
-        # Get the data from the flow, checking if the data is available 
+        # Get the data from the flow, checking if the data is available
         #
         flow_data = self._get_flow_results(action_result, tenant_id, query_id)
-####
-####    TODO we need to check what happens if we have a failure in _get_flow_results
-####
+        #
+        #  TODO we need to check what happens if we have a failure in _get_flow_results
+        #
         action_result.update_data(flow_data['data']['flows'])
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_flow_results(self, action_result, tenant_id, query_id):
-        """ Query for the percent complete, when 100.0, query for the data 
+        """ Query for the percent complete, when 100.0, query for the data
             and return it.
         """
         self.debug_print("Entering _get_flow_results")
@@ -311,7 +309,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 self.save_progress("Unable to get flow status")
                 return action_result.get_status()
-                
+
             if response['data']['query']['percentComplete'] >= 100.0:
                 self.save_progress("Flow Query Complete", **response)
                 break
@@ -324,7 +322,6 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         # the response should look like = flow_data = {"data": {"flows": []}}
         return response
-
 
     def _get_domains(self, action_result):
         """ Get the available Domains (Tenants) and build a dictionary
@@ -355,8 +352,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             Additional fields can be specified by updating the parameters for the app
             and then setting the values in the template (defined in the constants).
         """
-        filter = FILTER_TEMPLATE 
-        filter["startDateTime"] , filter["endDateTime"] =  self._calculate_timestamp(param)
+        filter = FILTER_TEMPLATE
+        filter["startDateTime"], filter["endDateTime"] = self._calculate_timestamp(param)
         filter["recordLimit"] = param.get('record_limit', DEFAULT_RECORD_LIMIT)
         filter["subject"]["ipAddresses"]["includes"] = [param.get('malicious_ip', '192.0.2.1')]
 
@@ -367,10 +364,10 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         Calculate the timestamp based on the user input from the GUI.
         If the start_time is not specified, use the current Zulu time minus time_span.
         If the time_span is not specified, use 60 minutes.
-        
+
         Returns a tuple of the start and end time in ISO8601 format
         """
-        
+
         time_span = param.get('time_span', TIME_SPAN)
 
         current_time = datetime.utcnow()
@@ -386,9 +383,9 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         #  Now we have determined the start time, calculate the end time
         #
         end_time = (start_time + timedelta(minutes=time_span))
-        
+
         #  Convert to ISO8601 format and return
-        return (start_time.strftime('%Y-%m-%dT%H:%M:%SZ'), 
+        return (start_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 end_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
     def handle_action(self, param):

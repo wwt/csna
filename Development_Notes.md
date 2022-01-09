@@ -216,3 +216,11 @@ tar --exclude-from 'phCisco Secure Network Analytics/exclude_files.txt' -zcvf ci
 ```
 
 Then download the tar file (to your Downloads directory perhaps) and import it into your Splunk SOAR web UI.
+
+Complie and install the app from the CLI
+----------------------------------------
+To publish an app during testing, issue:
+```shell
+cd 'csna/phCisco Secure Network Analytics'
+phenv python /opt/phantom/bin/compile_app.pyc -i
+```

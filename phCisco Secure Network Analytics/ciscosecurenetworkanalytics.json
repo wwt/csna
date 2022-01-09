@@ -2,15 +2,16 @@
     "appid": "eac976c5-c8d7-4b77-9fdd-52bab068679c",
     "name": "Cisco Secure Network Analytics",
     "description": "Cisco Secure Network Analytics (formerly Stealthwatch)",
-    "type": "information",
+    "type": "network security",
     "product_vendor": "Cisco",
     "logo": "logo_cisco.svg",
     "logo_dark": "logo_cisco_dark.svg",
-    "product_name": "Cisco",
+    "product_name": "Secure Network Analytics",
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "World Wide Technology",
     "license": "Copyright (c) World Wide Technology, 2021-2022",
+    "contributors": [ "@joelwking" ],
     "app_version": "1.0.0",
     "utctime_updated": "2021-12-06T16:13:03.261659Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
@@ -75,30 +76,35 @@
                     "data_type": "string",
                     "column_name": "Peer IP",
                     "contains": [ "ip" ],
+                    "example_values": [ "192.0.2.1" ],
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.peer.countryCode",
                     "data_type": "string",
                     "column_name": "Country",
+                    "example_values": [ "XR" ],
                     "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.protocol",
                     "data_type": "string",
                     "column_name": "protocol",
+                    "example_values": [ "TCP", "ICMP" ],
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.peer.portProtocol.port",
                     "data_type": "string",
                     "column_name": "Peer Port",
+                    "example_values": [ "443", "123" ],
                     "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.subject.payload",
                     "data_type": "string",
                     "column_name": "Payload",
+                    "example_values": [ "200 OK", "POST /api", "None" ],
                     "column_order": 4
                 },
                 {

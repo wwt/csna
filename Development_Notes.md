@@ -1,3 +1,7 @@
+Development Notes
+-----------------
+Notes and tips for using the remote development environment (via SSH) with VS Code.
+
 Splunk SOAR (Splunk Phantom)
 ----------------------------
 Notes for installing Splunk SOAR Community Edition
@@ -130,7 +134,7 @@ Assuming the repository is available (this repo will be moved to the WWT organiz
 
 ```
 GIT_SSH_COMMAND='ssh -i /home/phantom/.ssh/id_github' git clone git@github.com:joelwking/csna.git
-cd csna/phCisco\ Secure\ Network\ Analytics/
+cd csna/phCiscoSecureNetworkAnalytics
 ```
 
 ***INSERT EXECUTING INSTRUCTIONS HERE***
@@ -168,6 +172,7 @@ Testing interactively
 You can test your program without installing the application or using the web GUI by the following:
 
 ```
+cd csna/phCiscoSecureNetworkAnalytics
 phenv python ./ciscosecurenetworkanalytics_connector.py -u admin -p adminpswd test_jsons/test.json
 ```
 
@@ -206,21 +211,56 @@ Create the tar file
 See App installation in this link  https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/Connector
 ```
 cd ~/apps/csna
-tar -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
+tar -zcvf phCiscoSecureNetworkAnalytics.tgz phCiscoSecureNetworkAnalytics
 ```
 
->Note: use `--exclude-from 'phCisco Secure Network Analytics/exclude_files.txt'` to exclude files from the tarball.
+>Note: use `--exclude-from 'phCiscoSecureNetworkAnalytics/exclude_files.txt'` to exclude files from the tarball.
 
 ```
-tar --exclude-from 'phCisco Secure Network Analytics/exclude_files.txt' -zcvf ciscosecurenetworkanalytics.tgz 'phCisco Secure Network Analytics'
+tar --exclude-from phCiscoSecureNetworkAnalytics/exclude_files.txt -zcvf phCiscoSecureNetworkAnalytics.tgz  phCiscoSecureNetworkAnalytics
 ```
 
 Then download the tar file (to your Downloads directory perhaps) and import it into your Splunk SOAR web UI.
+
+>Note: if the install fails in the GUI or the CLI, the log file `/var/log/phantom/app_install.log` can be used to determine the cause of the failure.
 
 Complie and install the app from the CLI
 ----------------------------------------
 To publish an app during testing, issue:
 ```shell
-cd 'csna/phCisco Secure Network Analytics'
+cd csna/phCiscoSecureNetworkAnalytics
 phenv python /opt/phantom/bin/compile_app.pyc -i
 ```
+
+A successful install will appear as follows:
+```shell
+cd'ing into ./
+Validating App Json
+    App json found at ./ciscosecurenetworkanalytics.json
+  Validating App Json
+  Validating actions
+    test connectivity
+      No further validation coded for "test connectivity" action
+    retrieve flows
+      Following required data paths not in output list
+        action_result.summary
+        action_result.parameter.timespan
+        action_result.parameter.start_time
+        action_result.parameter.record_limit
+        action_result.parameter.malicious_ip
+Compiling: ./__init__.py
+Compiling: ./ciscosecurenetworkanalytics_connector.py
+Compiling: ./ciscosecurenetworkanalytics_consts.py
+Installing app...
+  Creating tarball...
+  ..//home/phantom/app/csna/phCiscoSecureNetworkAnalytics.tgz
+  Calling installer...
+  Success
+Done
+
+```
+
+Author
+------
+
+Joel W. King @joelwking

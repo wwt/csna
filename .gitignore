@@ -1,2 +1,3 @@
 phCiscoSecureNetworkAnalytics/__pycache__
-phCiscoSecureNetworkAnalytics/test_jsons
+phCiscoSecureNetworkAnalytics/test_jsons/*
+!phCiscoSecureNetworkAnalytics/test_jsons/readme.md

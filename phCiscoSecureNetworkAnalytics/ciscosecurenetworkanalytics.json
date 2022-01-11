@@ -13,16 +13,47 @@
     "license": "Copyright (c) World Wide Technology, 2021-2022",
     "contributors": [ {"name": "Joel W. King"} ],
     "app_version": "1.0.0",
-    "utctime_updated": "2021-12-06T16:13:03.261659Z",
+    "utctime_updated": "2022-01-11T16:00:00.261659Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
     "main_module": "ciscosecurenetworkanalytics_connector.py",
     "min_phantom_version": "5.0.1.66250",
     "app_wizard_version": "1.0.0",
-    "configuration": {"smc_username": {"description": "Username", "data_type": "string", "required": true},
-                      "smc_password": {"description": "Password", "data_type": "password", "required": true},
-                      "smc_host": {"description": "Management Console Hostname/IP", "data_type": "string", "required": true},
-                      "smc_tenant": {"description": "Tenant (Domain)", "data_type": "string", "required": true},
-                      "verify_cert": {"description": "Verify server certificate", "data_type": "boolean", "required": false}},
+    "configuration": {"smc_username": 
+                        {
+                            "description": "Username", 
+                            "data_type": "string",
+                            "order": 2,
+                            "required": true
+                        },
+                      "smc_password": 
+                        {
+                            "description": "Password", 
+                            "data_type": "password",
+                            "order": 3,
+                            "required": true
+                        },
+                      "smc_host": 
+                        {
+                            "description": "Management Console Hostname/IP", 
+                            "data_type": "string",
+                            "order": 0,
+                            "required": true
+                        },
+                      "smc_tenant": 
+                        {
+                            "description": "Tenant (Domain)", 
+                            "data_type": "string",
+                            "order": 4,
+                            "required": true
+                        },
+                      "verify_cert": 
+                        {
+                            "description": "Verify server certificate", 
+                            "data_type": "boolean",
+                            "order": 1,
+                            "required": false
+                        }
+                        },
     "actions": [
         {
             "action": "test connectivity",

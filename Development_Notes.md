@@ -234,6 +234,7 @@ phenv python /opt/phantom/bin/compile_app.pyc -i
 
 A successful install will appear as follows:
 ```shell
+[phantom@appdev phCiscoSecureNetworkAnalytics]$ phenv python /opt/phantom/bin/compile_app.pyc -i
 cd'ing into ./
 Validating App Json
     App json found at ./ciscosecurenetworkanalytics.json
@@ -242,12 +243,7 @@ Validating App Json
     test connectivity
       No further validation coded for "test connectivity" action
     retrieve flows
-      Following required data paths not in output list
-        action_result.summary
-        action_result.parameter.timespan
-        action_result.parameter.start_time
-        action_result.parameter.record_limit
-        action_result.parameter.malicious_ip
+      Done
 Compiling: ./__init__.py
 Compiling: ./ciscosecurenetworkanalytics_connector.py
 Compiling: ./ciscosecurenetworkanalytics_consts.py
@@ -257,7 +253,6 @@ Installing app...
   Calling installer...
   Success
 Done
-
 ```
 
 Author

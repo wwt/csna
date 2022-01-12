@@ -4,7 +4,7 @@
     "description": "Cisco Secure Network Analytics (formerly Stealthwatch)",
     "type": "network security",
     "product_vendor": "Cisco",
-    "url": "www.cisco.com/go/stealthwatch",
+    "url": "https://www.cisco.com/go/stealthwatch",
     "logo": "logo_cisco.svg",
     "logo_dark": "logo_cisco_dark.svg",
     "product_name": "Secure Network Analytics",
@@ -14,7 +14,7 @@
     "license": "Copyright (c) World Wide Technology, 2021-2022",
     "contributors": [ {"name": "Joel W. King"} ],
     "app_version": "1.0.0",
-    "utctime_updated": "2022-01-11T16:00:00.261659Z",
+    "utctime_updated": "2022-01-12T13:55:00Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
     "main_module": "ciscosecurenetworkanalytics_connector.py",
     "min_phantom_version": "5.0.1.66250",
@@ -70,7 +70,7 @@
         {
             "action": "retrieve flows",
             "identifier": "retrieve flows",
-            "description": "Given a malicious IP address, return flow data beginning at the start time for the specified duration.",
+            "description": "Given a malicious IP address, return flow data beginning at the start time for the specified duration",
             "verbose": "Provides the ability to create flow searches and retrieve the search results Currently this action only accepts one IP address, which is specified in subject of the filter",
             "type": "investigate",
             "read_only": true,
@@ -160,12 +160,33 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "summary.total_objects",
                     "data_type": "numeric"
                 },
                 {
                     "data_path": "summary.total_objects_successful",
                     "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.start_time",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.timespan",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.record_limit",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.malicious_ip",
+                    "data_type": "string",
+                    "contains": [ "ip" ]
                 }
                     ],
             "render": {

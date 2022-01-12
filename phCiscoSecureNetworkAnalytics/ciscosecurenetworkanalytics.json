@@ -75,27 +75,27 @@
             "type": "investigate",
             "read_only": true,
             "parameters": {"timespan": {
-                           "description": "Timespan (minutes), defaults to 60 minutes",
+                           "description": "Timespan (minutes), used to calculate the endDateTime value for the query filter.",
                            "data_type": "numeric",
                            "default": 60,
                            "order": 3,
                            "required": false
               },
                            "start_time": {
-                           "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, defaults to one hour from current time.",
+                           "description": "ISO 8601 format start time, e.g. 2021-05-11T15:30:00Z, defaults to one hour from current time. Specifies the startDateTime for the query filter.",
                            "data_type": "string",
                            "order": 2,
                            "required": false
               },
                            "record_limit": {
-                           "description": "Maximum number of flow records to return",
+                           "description": "Maximum number of flow records to return.",
                            "data_type": "numeric",
                            "default": 2000,
                            "order": 1,
                            "required": false
                },
                            "malicious_ip": {
-                           "description": "Malicious IP address (Subject) for search target",
+                           "description": "Malicious IP address (Subject) for search target.",
                            "contains": [ "ip" ],
                            "primary": true,
                            "data_type": "string",

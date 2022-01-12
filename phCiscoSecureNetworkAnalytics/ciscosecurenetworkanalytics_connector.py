@@ -259,9 +259,12 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             param DICT: Parameters for the app run
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
+        extra_data = {"flow": {"query": {}, "filter": {} }}  # Extra data for action_result
 
         if not self._get_domains(action_result):    # returned is the domain dictionary or empty dictionary
             return action_result.set_status(phantom.APP_ERROR, "Could not retrieve Tenants(Domains)")
+
+        action_result.add_extra_data(dict(domains=self._domains))
 
         config = self.get_config()
         tenant_id = self._domains.get(config['smc_tenant'])
@@ -272,6 +275,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         #
         end_point = INITIATE_FLOW_QUERY.format(tenant_id)
         filter = self._build_flow_query(param)
+        extra_data["flow"]["filter"] = filter
 
         self.save_progress("Initating flow query for {}".format(end_point))
         ret_val, response = self._make_rest_call(end_point, action_result, method='post', data=json.dumps(filter))
@@ -282,6 +286,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
 
         self.save_progress("Flow Query Initiated successfully", **response)
         self.debug_print("Flow Query Initiated, returned:", dump_object=response)
+        extra_data["flow"]["query"] = response.get("data", dict())
 
         query_id = response['data']['query']['id']  # We need the Tenant(Domain) and the query ID
         #
@@ -292,6 +297,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         #  TODO we need to check what happens if we have a failure in _get_flow_results
         #
         action_result.update_data(flow_data['data']['flows'])
+        action_result.add_extra_data(extra_data)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -378,7 +384,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ')
         except (ValueError, TypeError) as e:
             self.save_progress("Invalid time format: {} using default".format(e))
-            start_time = default_start_time
+            start_time = datetime.strptime(default_start_time, '%Y-%m-%dT%H:%M:%SZ')
         #
         #  Now we have determined the start time, calculate the end time
         #

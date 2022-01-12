@@ -224,7 +224,7 @@ Then download the tar file (to your Downloads directory perhaps) and import it i
 
 >Note: if the install fails in the GUI or the CLI, the log file `/var/log/phantom/app_install.log` can be used to determine the cause of the failure.
 
-Complie and install the app from the CLI
+Compile and install the app from the CLI
 ----------------------------------------
 To publish an app during testing, issue:
 ```shell

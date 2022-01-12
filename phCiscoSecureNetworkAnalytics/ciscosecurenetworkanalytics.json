@@ -4,6 +4,7 @@
     "description": "Cisco Secure Network Analytics (formerly Stealthwatch)",
     "type": "network security",
     "product_vendor": "Cisco",
+    "url": "www.cisco.com/go/stealthwatch",
     "logo": "logo_cisco.svg",
     "logo_dark": "logo_cisco_dark.svg",
     "product_name": "Secure Network Analytics",

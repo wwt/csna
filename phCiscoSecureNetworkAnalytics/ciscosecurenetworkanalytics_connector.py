@@ -139,7 +139,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _keepalive(self):
-        """ Verify if the login cookie continues to be valid, otherwise, 
+        """ Verify if the login cookie continues to be valid, otherwise,
             force a logout, to force a re-login.
         """
         self.debug_print("Entering _keepalive")
@@ -342,11 +342,11 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """ Get the available Domains (Tenants) and build a dictionary
             so we can associate the displayName with the associated id.
             The user will not know the id, rather the displayName.
-        
+
         Args:
             action_result (object): The ActionResult object to add to the connector run.
-        
-        Returns: 
+
+        Returns:
             dict: the value of the instance variable self._domains
         """
         self.debug_print("Entering _get_domains")
@@ -372,11 +372,11 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """ Substitute the parameters specified into the body of the flow query
             Additional fields can be specified by updating the parameters for the app
             and then setting the values in the template (defined in the constants).
-        
+
         Args:
             param (dict): App parameters
 
-        Returns: 
+        Returns:
             dict: the filter template with values populated from the app params
         """
         filter = FILTER_TEMPLATE
@@ -394,7 +394,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         Args:
             param (dict): App parameters
 
-        Returns: 
+        Returns:
             tuple: the start and end time in ISO8601 format
         """
 

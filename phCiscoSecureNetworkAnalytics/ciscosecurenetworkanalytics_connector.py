@@ -47,10 +47,11 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         # modify this as you deem fit.
         self._base_url = None
         self._verify = False             # should we verify the server certificate?
-        self._domains = {}               # maps the domain names to the numerical ID
+        self._domains = {}               # maps displayName (key) to domainId (value)
 
-        # Contains the requests session object, cookie expiration timer
+        # Contains the requests session object
         self._api_session = None
+        # cookie expiration timer
         self._api_session_timer = datetime.utcnow()
 
     def _process_empty_response(self, response, action_result):
@@ -138,7 +139,8 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _keepalive(self):
-        """ Verify if the login cookie continues to be valid, otherwise, force a logout, to force a re-login
+        """ Verify if the login cookie continues to be valid, otherwise, 
+            force a logout, to force a re-login.
         """
         self.debug_print("Entering _keepalive")
 
@@ -168,7 +170,7 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             store the Cookie for subsequent API calls.
 
         Args:
-            config (dict): values from the app configuration description
+            config (dict): values from the app configuration
         """
         self._api_session = requests.Session()
         self._api_session_timer = datetime.utcnow()
@@ -246,17 +248,18 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_retrieve_flows(self, param):
-        """
-        Retrieve flows from Management Console
+        """ Retrieve flows from Management Console
 
-        We first need to associate the Tenant (Domain) display name with the numeric ID.
-        Update the URL with the ID.
-        Using the parameters specified, build the body of the REST call with these parameters.
-        POST to start the query, using the query ID returned from the POST,
-        Get the results (when complete)
+        Associate the Tenant (Domain) display name with the numeric ID.
+        Update the URL with the numeric ID.
+        Build the body of the REST call with the app parameters.
+        POST to start the query. Using the query ID returned to get results when available
 
         Args:
-            param DICT: Parameters for the app run
+            param (dict): Parameters for the app run
+
+        Returns:
+            bool: status of the connector run result
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
         extra_data = {"flow": {"query": {}, "filter": {} }}  # Extra data for action_result
@@ -302,8 +305,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_flow_results(self, action_result, tenant_id, query_id):
-        """ Query for the percent complete, when 100.0, query for the data
-            and return it.
+        """ Query for the percent complete, when 100.0, query for the data and return it.
+
+        Args:
+            action_result (object): The ActionResult object to add to the connector run.
+            tenant_id (string):  AKA 'domainId' typically a numeric value, e.g. '142'
+            query_id (string):  a value to identify the job, e.g. "61e08288e4b0c257077d6ccf"
+
+        Returns:
+            dict: the flow data, e.g. {"data": {"flows": []}}
         """
         self.debug_print("Entering _get_flow_results")
 
@@ -326,13 +336,18 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
             self.save_progress("Unable to get flow results")
             return action_result.get_status()
 
-        # the response should look like = flow_data = {"data": {"flows": []}}
         return response
 
     def _get_domains(self, action_result):
         """ Get the available Domains (Tenants) and build a dictionary
             so we can associate the displayName with the associated id.
             The user will not know the id, rather the displayName.
+        
+        Args:
+            action_result (object): The ActionResult object to add to the connector run.
+        
+        Returns: 
+            dict: the value of the instance variable self._domains
         """
         self.debug_print("Entering _get_domains")
         # action_result = self.add_action_result(ActionResult(dict(param)))
@@ -357,6 +372,12 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         """ Substitute the parameters specified into the body of the flow query
             Additional fields can be specified by updating the parameters for the app
             and then setting the values in the template (defined in the constants).
+        
+        Args:
+            param (dict): App parameters
+
+        Returns: 
+            dict: the filter template with values populated from the app params
         """
         filter = FILTER_TEMPLATE
         filter["startDateTime"], filter["endDateTime"] = self._calculate_timestamp(param)
@@ -366,12 +387,15 @@ class CiscoSecureNetworkAnalyticsConnector(BaseConnector):
         return filter
 
     def _calculate_timestamp(self, param):
-        """
-        Calculate the timestamp based on the user input from the GUI.
-        If the start_time is not specified, use the current Zulu time minus time_span.
-        If the time_span is not specified, use 60 minutes.
+        """ Calculate the timestamp based on the user input from the GUI.
+            If the start_time is not specified, use the current Zulu time minus time_span.
+            If the time_span is not specified, use 60 minutes.
 
-        Returns a tuple of the start and end time in ISO8601 format
+        Args:
+            param (dict): App parameters
+
+        Returns: 
+            tuple: the start and end time in ISO8601 format
         """
 
         time_span = param.get('time_span', TIME_SPAN)

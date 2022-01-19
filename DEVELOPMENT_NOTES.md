@@ -216,20 +216,23 @@ The tar file can be downloaded from the remote instance to your laptop (to your 
 
 Compile and install the app from the CLI
 ----------------------------------------
-Rather than simply creating a tar file, you can compile your app and install it locally. Compiling also lints the code, and checks the format of the JSON file.
+Rather than simply creating a tar file, you can compile your app and install it locally. Compiling also lints the code, and checks the format of the JSON file. Refer to https://docs.splunk.com/Documentation/SOAR/current/DevelopApps/Tutorial#Compiling_and_installing_the_app for more information.
 
 If you are developing your app and wish to install (publish) on the development instance, issue:
 
 ```shell
 cd csna/phCiscoSecureNetworkAnalytics
-phenv python /opt/phantom/bin/compile_app.pyc -i
+phenv python /opt/phantom/bin/compile_app.pyc -i -g /home/phantom/app/csna/phCiscoSecureNetworkAnalytics/exclude_files.txt
 ```
+
+>Note: specify the absolute path for the `-g IGNORE_FILE`.
 
 The output of a successful install will appear as follows:
 
 ```shell
-[phantom@appdev phCiscoSecureNetworkAnalytics]$ phenv python /opt/phantom/bin/compile_app.pyc -i
+[phantom@appdev phCiscoSecureNetworkAnalytics]$ phenv python /opt/phantom/bin/compile_app.pyc -i -g /home/phantom/app/csna/phCiscoSecureNetworkAnalytics/exclude_files.txt 
 cd'ing into ./
+Will be ignoring: .git*, .vscode*, phCiscoSecureNetworkAnalytics/__pycache__, phCiscoSecureNetworkAnalytics/test_jsons/*
 Validating App Json
     App json found at ./ciscosecurenetworkanalytics.json
   Validating App Json
@@ -239,8 +242,8 @@ Validating App Json
     retrieve flows
       Done
 Compiling: ./__init__.py
-Compiling: ./ciscosecurenetworkanalytics_connector.py
 Compiling: ./ciscosecurenetworkanalytics_consts.py
+Compiling: ./ciscosecurenetworkanalytics_connector.py
 Installing app...
   Creating tarball...
   ..//home/phantom/app/csna/phCiscoSecureNetworkAnalytics.tgz
@@ -250,6 +253,8 @@ Done
 ```
 
 The compiler will create the tar file and leave it in your app home directory (e.g. `csna`) enabling you to include it in your remote GIT repository. Users can then download the tar file to their Splunk SOAR instance for use.
+
+>Note: Verify your files have been ignored! If they have not, use the `tar` command to manually create the tar file before uploading to your Git remote!
 
 Creating Test Data
 ------------------

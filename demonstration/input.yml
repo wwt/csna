@@ -1,0 +1,20 @@
+---
+container:
+  name: 'Voltaire'
+  description: 'French Enlightenment writer, historian, and philosopher.'
+  label: events
+  artifacts:
+    - name: DEMO99
+      source_data_identifier: "IR_3458575"
+      meta_data:
+        quote: "Judge of a man by his questions rather than by his answers."
+      cef:
+        sourceAddress: '10.10.101.24'
+        sourcePort: 6553
+        sourceUserId: administrator
+        deviceCustomNumber1: 2000
+        deviceCustomNumber1Label: 'record_limit'
+        deviceCustomNumber2: 250
+        deviceCustomNumber2Label: timespan
+        startTime: default
+        deviceCustomDate1: default

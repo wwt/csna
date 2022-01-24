@@ -87,7 +87,7 @@ def add_defaults_for_custom_fields(cef):
     """
 
     if cef['startTime'] == 'default':
-        cef['startTime'] = time.time() - (60000 * TIME_SPAN)  # milliseconds since epoch 
+        cef['startTime'] = int((time.time() - (60 * TIME_SPAN)) * 1000)  # milliseconds since epoch 
 
     if cef['deviceCustomDate1'] == 'default':
         current_time = datetime.utcnow()

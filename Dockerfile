@@ -21,7 +21,9 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN mkdir /code
 COPY . /code
 WORKDIR /code
+RUN pip3 install -r requirements.txt
 
 ADD https://raw.githubusercontent.com/joelwking/Phantom-Cyber/master/REST_ingest/PhantomIngest.py /code/PhantomIngest.py
+ENV PYTHONPATH=/code
 #
 #   The virtual environment is /opt/soar

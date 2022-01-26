@@ -260,6 +260,8 @@ Creating Test Data
 ------------------
 To populate Splunk SOAR with test events to demonstrate your app, I wrote a Python class which uses the Splunk SOAR API to generate containers and artifacts.
 
+You can follow these instructions to create an event from the user `phantom` and interactively from the Python interpreter, or you can use the code and instructions under the `test` directory to run a Docker container and define the events with a YAML file. refer to the `test/readme.md`. 
+
 The code is available at: https://github.com/joelwking/Phantom-Cyber/tree/master/REST_ingest
 
 From the Splunk SOAR user interface (UI) naviate to Administration -> User Management -> Users and edit the user `automation`.  You need to show the token or set a new token.
@@ -291,7 +293,7 @@ curl https://raw.githubusercontent.com/joelwking/Phantom-Cyber/master/REST_inges
 ```
 
 Create events
-----------------------
+-------------
 Download and run this program to create events (containers and artifacts) in Splunk SOAR so the app can be run against an artifact.
 
 ```shell

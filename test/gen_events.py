@@ -1,4 +1,4 @@
-#!/opt/phantom/usr/bin/python
+#!/opt/soar/bin/python
 # -*- coding: utf-8 -*-
 #
 #      Copyright (c) 2021 - 2022  World Wide Technology
@@ -8,18 +8,23 @@
 #
 #      references:
 #          https://kc.mcafee.com/resources/sites/MCAFEE/content/live/CORP_KNOWLEDGEBASE/78000/KB78712/en_US/CEF_White_Paper_20100722.pdf
+#
+#      # export PH_AUTH_TOKEN=2adnymvMJMredactedHOM+xBGUNs1wEk=
+#      export PH_SERVER=54.237.22.123
+#
 import time
 from datetime import datetime
 from datetime import timedelta
 import os
+import sys
 import yaml
+import argparse
 #
 #  Download from https://raw.githubusercontent.com/joelwking/Phantom-Cyber/master/REST_ingest/PhantomIngest.py
 #
 import PhantomIngest as ingest
 
-# export PH_AUTH_TOKEN=2adnymvMJMredactedHOM+xBGUNs1wEk=
-# export PH_SERVER=54.237.22.123
+TIME_SPAN = 60
 
 p = ingest.PhantomIngest(os.getenv('PH_SERVER'), os.getenv('PH_AUTH_TOKEN'))
 
@@ -34,7 +39,7 @@ def get_fileobj(filepath=None):
     return fileobject
 
 def add_event(document, custom=False):
-    """
+    """ Add a container and artifact(s) based on the YAML definition file.
     """
 
     try:
@@ -46,10 +51,11 @@ def add_event(document, custom=False):
     container = {}
 
     for key in ('name', 'description', 'label'):
-        container[key] = document['container'].get(key), 'NONE')
+        container[key] = document['container'].get(key, 'NONE')
 
     try:
         container_id = p.add_container(**container)
+        print(f'Added container: {container_id}')
     except AssertionError as e:
         print("Any HTTP return code other than OK %s" % e)
         return False
@@ -62,13 +68,13 @@ def add_event(document, custom=False):
     for artifact in document['container'].get('artifacts'):
         for key in ('name', 'source_data_identifier'):
             _artifact[key] = artifact.get(key, 'NONE')
-        cef = artifact.get(cef, dict())
+        cef = artifact.get('cef', dict())
         if custom:
             cef = add_defaults_for_custom_fields(cef)
-        meta_data = artifact.get(meta_data, dict())
+        meta_data = artifact.get('meta_data', dict())
         try:
             artifact_id = p.add_artifact(container_id, cef, meta_data, **_artifact)
-            print(f'Added container:{container_id}, artifact:{artifact_id}')
+            print(f' |---  artifact: {artifact_id}')
         except (AssertionError, Exception) as e:
             print(f'Failure adding artifact: {e}')
         
@@ -77,25 +83,24 @@ def add_event(document, custom=False):
     return
 
 def add_defaults_for_custom_fields(cef):
-    """ 
+    """ If the string 'default' is the value for StartTime or deviceCustomDate1, calculate values
     """
 
     if cef['startTime'] == 'default':
-        cef['startTime'] = time.time()  # milliseconds since epoch
+        cef['startTime'] = int((time.time() - (60 * TIME_SPAN)) * 1000)  # milliseconds since epoch 
 
     if cef['deviceCustomDate1'] == 'default':
         current_time = datetime.utcnow()
-        default_start_time = (current_time - timedelta(minutes=time_span)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        default_start_time = (current_time - timedelta(minutes=TIME_SPAN)).strftime('%Y-%m-%dT%H:%M:%SZ')
         start_time = datetime.strptime(default_start_time, '%Y-%m-%dT%H:%M:%SZ')
-        cef['deviceCustomDate1'] = start_time
-  
-    return cef
+        cef['deviceCustomDate1'] = start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+    return cef
 
 def main():
 
     parser = argparse.ArgumentParser(prog='gen_events', description='Create events in Splunk> SOAR')
-    parser.add_argument('-c', '--custom', dest='custom', help='update custom fields if not set', action='store_true'required=False)
+    parser.add_argument('-c', '--custom', dest='custom', help='update custom fields if not set', action='store_true', required=False)
     parser.add_argument('-f', '--file', dest='document', help='a YAML formatted input file', default=None, required=True)
     args = parser.parse_args()
 

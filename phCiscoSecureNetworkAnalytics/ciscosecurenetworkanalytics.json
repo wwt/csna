@@ -14,7 +14,7 @@
     "license": "Copyright (c) World Wide Technology, 2021-2022",
     "contributors": [ {"name": "Joel W. King"} ],
     "app_version": "1.0.0",
-    "utctime_updated": "2022-01-12T13:55:00Z",
+    "utctime_updated": "2022-01-26T18:22:00Z",
     "package_name": "phantom_ciscosecurenetworkanalytics",
     "main_module": "ciscosecurenetworkanalytics_connector.py",
     "min_phantom_version": "5.0.1.66250",

@@ -9,7 +9,7 @@
 #      references:
 #          https://kc.mcafee.com/resources/sites/MCAFEE/content/live/CORP_KNOWLEDGEBASE/78000/KB78712/en_US/CEF_White_Paper_20100722.pdf
 #
-#      # export PH_AUTH_TOKEN=2adnymvMJMredactedHOM+xBGUNs1wEk=
+#      export PH_AUTH_TOKEN=2adnymvMJMredactedHOM+xBGUNs1wEk=
 #      export PH_SERVER=54.237.22.123
 #
 import time

@@ -49,9 +49,13 @@ References
 ----------
  * [Stealthwatch Enterprise REST API documentation](https://developer.cisco.com/docs/stealthwatch/)
 
-* [Update scripts to handle XSRF token introduced in 7.3.2](https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/tree/handle-csrf-token/python)
+ * [Update scripts to handle XSRF token introduced in 7.3.2](https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/tree/handle-csrf-token/python)
 
-* [get the flows for a specific IP](https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/blob/master/python/get_flows.py)
+ * [get the flows for a specific IP](https://github.com/CiscoDevNet/stealthwatch-enterprise-sample-scripts/blob/master/python/get_flows.py)
+
+How to Information
+------------------
+In addition to the `DEVELOPMENT_NOTES.md` file, there is an internal WWT Stream channel with video recordings of the working sessions. The channel name is  **Splunk> SOAR**.
 
 Author
 ------

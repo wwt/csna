@@ -1,4 +1,4 @@
 .git*
 .vscode*
-phCiscoSecureNetworkAnalytics/__pycache__/*
+phCiscoSecureNetworkAnalytics/__pycache__
 phCiscoSecureNetworkAnalytics/test_jsons/*.json

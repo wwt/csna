@@ -1,6 +1,10 @@
 # csna
 Cisco Secure Network Analytics (formerly Stealthwatch) app for Splunk SOAR (formerly Splunk Phantom)
 
+[Integrating Splunk SOAR and Cisco Secure Network Analytics](https://www.wwt.com/article/integrating-splunk-soar-and-cisco-secure-network-analytics)
+
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/wwt/csna)
+
 Asset Configuration
 -------------------
 The asset definition requires these fields:
